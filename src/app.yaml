@@ -1,0 +1,17 @@
+application: csce242
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+
+- url: /img
+  static_dir: img
+
+- url: /.*
+  script: csce242.app
+  
+libraries:
+- name: jinja2
+  version: latest
