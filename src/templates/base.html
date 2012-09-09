@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<meta charset=UTF-8>
+<title>HW2: Guilherme Salazar</title>
+<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+</head>
+
+<body>
+
+	<h1>HW2: Guilherme Salazar</h1>
+
+	<!-- Super block in which we'll display the content entered -->
+	{% block display %}
+	{% endblock %}
+
+	<p>Enter new pin:</p>
+
+	<form action="/display" method="post">
+		<label for="urltextbox">Image URL: </label><input id="urltextbox" type="text" name="url" /><br />
+		<label for="captiontextbox">Caption: </label><input id="captiontextbox" type="text" name="caption" /><br/><br/>
+		<input type="submit" />
+	</form>
+
+</body>
+
+</html>

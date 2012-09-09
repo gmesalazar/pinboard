@@ -1,13 +1,13 @@
-application: csce242
-version: 1
+application: csce242-gmesalazar
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
 
-- url: /img
-  static_dir: img
+- url: /stylesheets
+  static_dir: stylesheets
 
 - url: /.*
   script: csce242.app

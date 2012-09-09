@@ -1,0 +1,15 @@
+<!-- jinja2 template, inherits from "base.html" -->
+
+{% extends "base.html" %}
+
+<!-- Block that appears before "Enter new pin" -->
+{% block display %}
+	<p>You just entered:</p>
+	<ul>
+		<li>
+			Image URL: {{ url }} <br/><br/>
+			<img width="300" align="top" src= {{ '"' + url + '"' }}/> <br/><br/>
+		</li>
+		<li>Caption: {{ caption }} <br/></li>
+	</ul>
+{% endblock %}
