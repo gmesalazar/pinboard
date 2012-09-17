@@ -47,7 +47,8 @@ body {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	padding: 8px;
-	box-shadow: 0px 1px 22px #73000A
+	box-shadow: 0px 1px 22px #73000A;
+	background: #ECD9DB;
 }
 
 #sbox {
