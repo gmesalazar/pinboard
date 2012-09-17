@@ -4,25 +4,46 @@
 
 <head>
 <meta charset=UTF-8>
-<title>HW2: Guilherme Salazar</title>
-<link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+<title>HW3: Guilherme Salazar</title>
+<link rel="stylesheet" type="text/css"
+	href="templates/stylesheets/style.css" />
 </head>
 
 <body>
 
-	<h1>HW2: Guilherme Salazar</h1>
+	<div id="header">
+		<span class="username"><b>{{username}}</b><a href={{'"' + headurl + '"'}}>{{
+				text }}</a></span>
+	</div>
+	<div id="content">
 
-	<!-- Super block in which we'll display the content entered -->
-	{% block display %}
-	{% endblock %}
+		<h1>
+			<br>Pinboard
+		</h1>
 
-	<p>Enter new pin:</p>
+		{% block display %} 
+		{% endblock %} 
+		
+		{% block box %}
+		<div id="box">
+			<!-- Super block in which we'll display the content entered -->
 
-	<form action="/display" method="post">
-		<label for="urltextbox">Image URL: </label><input id="urltextbox" type="text" name="url" /><br />
-		<label for="captiontextbox">Caption: </label><input id="captiontextbox" type="text" name="caption" /><br/><br/>
-		<input type="submit" />
-	</form>
+			<p>Enter new pin</p>
+
+			<form action="/display" method="post">
+				<label for="urltextbox">Image URL: </label><input id="urltextbox"
+					type="text" name="url" /><br /> <label for="captiontextbox">Caption:
+				</label><input id="captiontextbox" type="text" name="caption" /><br /> <br />
+				<input type="submit" />
+			</form>
+		</div>
+		{% endblock %}
+	</div>
+
+	<div id="footer">
+		<span class="name">Guilherme Salazar Silva</span>
+	</div>
+
 
 </body>
 
