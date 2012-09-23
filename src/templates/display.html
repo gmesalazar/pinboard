@@ -4,14 +4,8 @@
 
 <!-- Block that appears before "Enter new pin" -->
 {% block display %}
-<div id="display">
-	<p>You just entered:</p>
-	<ul>
-		<li>Image URL: {{ url }} <br />
-		<br /> <img width="200" align="top" src={{ '"' + url + '"' }}/> <br />
-		<br />
-		</li>
-		<li>Caption: {{ caption }} <br /></li>
-	</ul>
+<div id="box">
+		<p><img width="200" align="top" src={{ '"' + url + '"' }}/></p>
+		<p>Caption: {{ caption }}</p>
 </div>
 {% endblock %}

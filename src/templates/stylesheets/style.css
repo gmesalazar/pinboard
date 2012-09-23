@@ -13,81 +13,67 @@ label {
 body {
 	background: #D0D4D2;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 98%;
+	font-size: 97%;
 }
 
 #header {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
+	right: 0;
+	font-size: 95%;
 	width: 100%;
 	height: 5%;
 	background: #73000a;
 	left: 0;
-	text-align: right;
 	z-index: 1;
 	box-shadow: 0px 0px 17px #73000A;
 }
 
-#content {
-	height: 90%;
-}
-
-#box {
-	position: fixed;
-	height: 150px;
-	width: 300px;
-	overflow: auto;
-	padding: 8px;
-	left: 38%;
-	top: 38%;
-	/* portable border -- thanks http://www.css3.me/ */
-	box-shadow: 0px 1px 22px #73000A;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	padding: 8px;
-	box-shadow: 0px 1px 22px #73000A;
-	background: #ECD9DB;
-}
-
-#sbox {
-	position: absolute;
-	height: 51px;
-	width: 280px;
-	overflow: auto;
-	padding: 8px;
-	left: 38%;
-	top: 38%;
-	/* portable border -- thanks http://www.css3.me/ */
-	box-shadow: 0px 1px 22px #73000A;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	padding: 8px;
-	text-align: center;
-	background: #ECD9DB;
-}
-
 #footer {
-	position: fixed;
+	position: absolute;
 	bottom: 0;
 	left: 0;
+	right: 0;
 	width: 100%;
 	height: 5%;
 	background: #000000;
-	text-align: center;
 	box-shadow: 0px 0px 22px #000000;
+}
+
+#box {
+	display: table;
+	position: relative;
+	height: auto;
+	width: auto;
+	margin: auto;
+	/* portable border -- thanks, http://www.css3.me/ */
+	box-shadow: 0px 1px 22px #73000A;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding: 8px;
+	box-shadow: 0px 1px 22px #73000A;
+	background: #ECD9DB;
 }
 
 .username {
 	color: #B2B4B3;
 	line-height: 2.2em;
+	float: right;
 }
 
 .name {
 	color: #B2B4B3;
 	line-height: 2.2em;
+	float: left;
+}
+
+.quote {
+	color: #B2B4B3;
+	line-height: 2.2em;
+	float: right;
+	font-style: italic;
 }
 
 a:link {
@@ -96,16 +82,6 @@ a:link {
 }
 
 a:visited {
-	color: #B2B4B3;
-	font-weight: bold;
-}
-
-a:hover {
-	color: #B2B4B3;
-	font-weight: bold;
-}
-
-a:active {
 	color: #B2B4B3;
 	font-weight: bold;
 }

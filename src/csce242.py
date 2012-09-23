@@ -2,47 +2,58 @@
 Created on Aug 28, 2012
 
 @author: Guilherme Salazar 
-@email gmesalazar@{acm, gmail}.com
+@email gmesalazar@gmail.com
 '''
 
 import webapp2
 import jinja2
 import os
 
+from google.appengine.ext import db
 from google.appengine.api import users
 
 jinja_environment = jinja2.Environment(
                         loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'))
 
 '''
-@summary: Handler associated with the main page
+@summary: data model for a pin
 '''
-class MainPage(webapp2.RequestHandler):
+class Pin(db.Model):
+    imgUrl = db.StringProperty()
+    caption = db.StringProperty()
+    date = db.DateProperty()
+    owner = db.StringProperty()
+
+'''
+@summary: Class containing handlers
+'''
+class Handler(webapp2.RequestHandler):
+    
+    def render(self, tempName):
+        template = jinja_environment.get_template(tempName)
+        self.response.out.write(template.render(self.template_values))  
+    
     def get(self):
         
         user = users.get_current_user()
         
         if user:
-            template_values = {
+            self.template_values = {
                 'username': user.nickname() + ' ',
                 'headurl': users.create_logout_url("/login"),
                 'text': 'Logout'
             }
             
-            template = jinja_environment.get_template('base.html')
-            self.response.out.write(template.render(template_values))
+            self.render('base.html')
+            
         else:
             self.redirect('/login')
-
-'''
-@summary: Handler associated with the "display" page
-'''
-class Display(webapp2.RequestHandler):
+            
     def post(self):
         
         user = users.get_current_user()
         
-        template_values = {
+        self.template_values = {
             'url': self.request.get('url'),
             'caption': self.request.get('caption'),
             'username': user.nickname() + ' ',
@@ -50,22 +61,29 @@ class Display(webapp2.RequestHandler):
             'text': 'Logout'
         }
         
-        template = jinja_environment.get_template('display.html')
-        self.response.out.write(template.render(template_values))
+        self.render('display.html')
         
-class Login(webapp2.RequestHandler):
+   
+'''
+@summary: Class containing authentication handlers
+'''     
+class Auth(webapp2.RequestHandler):
+
+    def render(self, tempName):
+        template = jinja_environment.get_template(tempName)
+        self.response.out.write(template.render(self.template_values))  
+    
     def get(self):
         
-        template_values = {
+        self.template_values = {
             'username': '',
             'headurl': users.create_login_url('/'),
             'text': 'Login'
         }
         
-        template = jinja_environment.get_template('login.html')
-        self.response.out.write(template.render(template_values))
- 
+        self.render('login.html')
 
 
-app = webapp2.WSGIApplication([('/', MainPage), ('/display', Display), ('/login', Login)],
+
+app = webapp2.WSGIApplication([('/', Handler), ('/display', Handler), ('/login', Auth)],
                               debug=True)
