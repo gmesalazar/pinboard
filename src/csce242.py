@@ -60,6 +60,7 @@ class Handler(Util):
         user = users.get_current_user()
         
         self.pins = Pin.all()
+        self.pins.filter("owner =", user.nickname())
         
         self.template_values = {
             'pins': self.pins,
