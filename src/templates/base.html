@@ -6,15 +6,16 @@
 <meta charset=UTF-8>
 <title>HW4: Guilherme Salazar</title>
 <link rel="stylesheet" type="text/css"
-	href="templates/stylesheets/style.css" />
+	href="/templates/stylesheets/style.css" />
 </head>
 
 <body>
 
+	{% block header %}
 	<div id="header">
-		<span class="username"><b>{{username}}</b><a href={{'"' + headurl + '"'}}>{{
-				text }}</a></span>
+		<span class="username"><b>{{username}}</b> <a href={{'"' + headurl + '"'}}>{{text }}</a></span>
 	</div>
+	{% endblock %}
 	<div id="content">
 
 		<h1>
@@ -23,7 +24,7 @@
 
 		{% block display %}
 		<!--  -->
-		{% endblock %} <br />
+		{% endblock %}
 
 		<!--  -->
 		{% block box %}
@@ -32,7 +33,7 @@
 
 			<p>Enter new pin</p>
 
-			<form action="/display" method="post">
+			<form action="/pin/" method="post">
 				<label for="urltextbox">Image URL: </label><input id="urltextbox"
 					type="text" name="url" /><br /> <label for="captiontextbox">Caption:
 				</label><input id="captiontextbox" type="text" name="caption" /><br /> <br />
@@ -42,6 +43,12 @@
 		{% endblock %}
 	</div>
 
+	<br />
+	<br />
+	<br />
+	<br />
+	
+	<div style="clear: both;"></div>
 	<div id="footer">
 		<span class="name">Guilherme Salazar Silva</span> <span class="quote">"Quaerendo
 			Invenietis" &ndash; JSB</span>

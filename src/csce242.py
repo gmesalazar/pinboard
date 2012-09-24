@@ -21,17 +21,21 @@ jinja_environment = jinja2.Environment(
 class Pin(db.Model):
     imgUrl = db.StringProperty()
     caption = db.StringProperty()
-    date = db.DateProperty()
+    date = db.DateProperty(auto_now=True)
     owner = db.StringProperty()
+    id = db.IntegerProperty()
 
 '''
 @summary: Class containing handlers
 '''
-class Handler(webapp2.RequestHandler):
+    
+class Util(webapp2.RedirectHandler):
     
     def render(self, tempName):
         template = jinja_environment.get_template(tempName)
         self.response.out.write(template.render(self.template_values))  
+
+class MainPage(Util):
     
     def get(self):
         
@@ -44,34 +48,93 @@ class Handler(webapp2.RequestHandler):
                 'text': 'Logout'
             }
             
-            self.render('base.html')
+            self.render('home.html')
             
         else:
             self.redirect('/login')
-            
-    def post(self):
+      
+class Handler(Util):
+    
+    def get(self):
         
         user = users.get_current_user()
         
+        self.pins = Pin.all()
+        
         self.template_values = {
-            'url': self.request.get('url'),
-            'caption': self.request.get('caption'),
+            'pins': self.pins,
             'username': user.nickname() + ' ',
             'headurl': users.create_logout_url('/login'),
             'text': 'Logout'
         }
         
-        self.render('display.html')
+        self.render('displaythumbs.html')
+        
+    def post(self):
+        
+        user = users.get_current_user()
+        
+        self.pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'),
+                       owner=user.nickname())
+        
+        self.pin.save()
+        
+        self.pin.id = self.pin.key().id()
+        
+        self.pin.save()
+        
+        self.redirect('/pin/%s' % self.pin.key().id())
+            
+class PinHandler(Util):
+    
+    def get(self, id):
+
+        user = users.get_current_user()        
+        
+        self.key = db.Key.from_path('Pin', long(id))
+        self.pin = db.get(self.key)
+        
+        self.pins = set()
+        self.pins.add(self.pin)
+                
+        self.template_values = {
+            'pins': self.pins,
+            'username': user.nickname() + ' ',
+            'headurl': users.create_logout_url('/login'),
+            'text': 'Logout'
+        }
+        
+        self.render('displaypin.html')
+        
+    def post(self, id):
+        
+        self.action = self.request.get('action')
+        
+        if self.action == 'update':
+            newUrl = self.request.get('url')
+            newCaption = self.request.get('caption')
+            
+            self.key = db.Key.from_path('Pin', long(id))
+            self.pin = db.get(self.key)
+            
+            self.pin.imgUrl = newUrl
+            self.pin.caption = newCaption
+            
+            self.pin.save()
+            self.redirect('/pin/%s' % id)
+            
+        else:
+            self.key = db.Key.from_path('Pin', long(id))
+            self.pin = db.get(self.key)
+            
+            self.pin.delete()
+            self.redirect('/pin')
         
    
 '''
 @summary: Class containing authentication handlers
 '''     
-class Auth(webapp2.RequestHandler):
-
-    def render(self, tempName):
-        template = jinja_environment.get_template(tempName)
-        self.response.out.write(template.render(self.template_values))  
+class Auth(Util):
     
     def get(self):
         
@@ -85,5 +148,5 @@ class Auth(webapp2.RequestHandler):
 
 
 
-app = webapp2.WSGIApplication([('/', Handler), ('/display', Handler), ('/login', Auth)],
-                              debug=True)
+app = webapp2.WSGIApplication([('/', MainPage), ('/pin/(.[0-9]*)/?', PinHandler),
+                               ('/pin|/pin/', Handler), ('/login', Auth)], debug=True)

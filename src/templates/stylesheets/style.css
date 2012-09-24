@@ -16,6 +16,10 @@ body {
 	font-size: 97%;
 }
 
+#content  {
+	height: 90%;
+}
+
 #header {
 	position: absolute;
 	top: 0;
@@ -31,7 +35,7 @@ body {
 }
 
 #footer {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -55,6 +59,10 @@ body {
 	padding: 8px;
 	box-shadow: 0px 1px 22px #73000A;
 	background: #ECD9DB;
+}
+
+#caption {
+	text-align: center;
 }
 
 .username {
