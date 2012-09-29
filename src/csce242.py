@@ -22,7 +22,7 @@ class Pin(db.Model):
     imgUrl = db.StringProperty()
     caption = db.StringProperty()
     date = db.DateProperty(auto_now=True)
-    owner = db.StringProperty()
+    owner = db.UserProperty(auto_current_user=True)
     id = db.IntegerProperty()
 
 '''
@@ -33,7 +33,23 @@ class Util(webapp2.RedirectHandler):
     
     def render(self, tempName):
         template = jinja_environment.get_template(tempName)
-        self.response.out.write(template.render(self.template_values))  
+        self.response.out.write(template.render(self.template_values))
+        
+    def exceptionRender(self, message, tempname):
+        
+        self.user = users.get_current_user()
+        
+        self.template_values = {
+                'username': self.user.nickname() + ' ',
+                'headurl': users.create_logout_url("/login"),
+                'text': 'Logout',
+                'exception': True,
+                'message_header': 'Exceptional condition detected!',
+                'message_body':  message + 
+                                '; you were redirected to the main page.'
+            }           
+            
+        self.render(tempname)
 
 class MainPage(Util):
     
@@ -60,7 +76,7 @@ class Handler(Util):
         user = users.get_current_user()
         
         self.pins = Pin.all()
-        self.pins.filter("owner =", user.nickname())
+        self.pins.filter("owner =", user)
         
         self.template_values = {
             'pins': self.pins,
@@ -69,14 +85,11 @@ class Handler(Util):
             'text': 'Logout'
         }
         
-        self.render('displaythumbs.html')
+        self.render('thumbnails.html')
         
     def post(self):
         
-        user = users.get_current_user()
-        
-        self.pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'),
-                       owner=user.nickname())
+        self.pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'))
         
         self.pin.save()
         
@@ -95,17 +108,23 @@ class PinHandler(Util):
         self.key = db.Key.from_path('Pin', long(id))
         self.pin = db.get(self.key)
         
-        self.pins = set()
-        self.pins.add(self.pin)
-                
-        self.template_values = {
-            'pins': self.pins,
-            'username': user.nickname() + ' ',
-            'headurl': users.create_logout_url('/login'),
-            'text': 'Logout'
-        }
+        if self.pin:
         
-        self.render('displaypin.html')
+            self.pins = set()
+            self.pins.add(self.pin)
+                
+            self.template_values = {
+                'pins': self.pins,
+                'username': user.nickname() + ' ',
+                'headurl': users.create_logout_url('/login'),
+                'text': 'Logout'
+            }
+        
+            self.render('pin.html')
+            
+        else:
+            
+            self.exceptionRender('Pin not found', 'home.html')
         
     def post(self, id):
         
@@ -134,7 +153,7 @@ class PinHandler(Util):
    
 '''
 @summary: Class containing authentication handlers
-'''     
+'''
 class Auth(Util):
     
     def get(self):
@@ -148,6 +167,16 @@ class Auth(Util):
         self.render('login.html')
 
 
-
+'''
+@summary: 404 error handler
+'''
+class NotFoundPageHandler(Util):
+    
+    def get(self):
+        self.exceptionRender('Page not found', 'home.html')
+    
+    
 app = webapp2.WSGIApplication([('/', MainPage), ('/pin/(.[0-9]*)/?', PinHandler),
-                               ('/pin|/pin/', Handler), ('/login', Auth)], debug=True)
+                               ('/pin|/pin/', Handler), ('/login', Auth), 
+                               ('/.*', NotFoundPageHandler)],
+                               debug=True)

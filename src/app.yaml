@@ -8,6 +8,9 @@ handlers:
 
 - url: /templates/stylesheets
   static_dir: templates/stylesheets
+  
+- url: /templates/images
+  static_dir: templates/images
 
 - url: /.*
   script: csce242.app

@@ -13,23 +13,44 @@
 
 	{% block header %}
 	<div id="header">
-		<span class="username"><b>{{username}}</b> <a href={{'"' + headurl + '"'}}>{{text }}</a></span>
+
+		<a href={{'"' + headurl + '"'}}>{{ text }}</a></span>
+
 	</div>
 	{% endblock %}
+
+	<!--  -->
+	{% block content %}
 	<div id="content">
 
-		<h1>
-			<br>Pinboard
-		</h1>
+		<br />
 
+		<h1>Pinboard</h1>
+
+		{% if exception %}
+		<!--  -->
+		{% block messagebox %}
+		<div id="exbox">
+			<img id="mimage" src="/templates/images/warning.png" />
+			<p id="mheader">{{ message_header }}</p>
+			<p>{{ message_body }}</p>
+		</div>
+		{% endblock %}
+		<!--  -->
+
+		<br /> <br />
+
+		<!--  -->
+		{% endif %}
+
+		<!--  -->
 		{% block display %}
 		<!--  -->
 		{% endblock %}
 
-		<!--  -->
+		<!-- Super block in which we'll display the content entered -->
 		{% block box %}
 		<div id="box">
-			<!-- Super block in which we'll display the content entered -->
 
 			<p>Enter new pin</p>
 
@@ -39,21 +60,27 @@
 				</label><input id="captiontextbox" type="text" name="caption" /><br /> <br />
 				<input type="submit" />
 			</form>
+
 		</div>
 		{% endblock %}
+
 	</div>
+	{% endblock %}
 
 	<br />
 	<br />
 	<br />
 	<br />
-	
-	<div style="clear: both;"></div>
+
+	<!--  -->
+	{% block footer %}
 	<div id="footer">
-		<span class="name">Guilherme Salazar Silva</span> <span class="quote">"Quaerendo
-			Invenietis" &ndash; JSB</span>
-	</div>
 
+		<span class="lefttxt">Guilherme Salazar Silva</span> <span
+			class="quote">"Quaerendo Invenietis" &ndash; JSB </span>
+
+	</div>
+	{% endblock %}
 
 </body>
 

@@ -16,8 +16,13 @@ body {
 	font-size: 97%;
 }
 
-#content  {
+#content {
 	height: 90%;
+    
+    /* This looks pretty! :) -- thanks, http://daneden.me/2010/12/css-font-smoothing/ */
+    text-shadow: 0 1px 1px rgba(255, 255, 255, .3);
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
 }
 
 #header {
@@ -32,6 +37,8 @@ body {
 	left: 0;
 	z-index: 1;
 	box-shadow: 0px 0px 17px #73000A;
+	text-align: right;
+	line-height: 2.2em;
 }
 
 #footer {
@@ -45,14 +52,13 @@ body {
 	box-shadow: 0px 0px 22px #000000;
 }
 
-#box {
+#box,#exbox {
 	display: table;
 	position: relative;
 	height: auto;
 	width: auto;
 	margin: auto;
 	/* portable border -- thanks, http://www.css3.me/ */
-	box-shadow: 0px 1px 22px #73000A;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -61,17 +67,30 @@ body {
 	background: #ECD9DB;
 }
 
+#exbox {
+	background: #909090;
+	box-shadow: 0px 1px 22px #696969;
+	text-align: center;
+}
+
 #caption {
 	text-align: center;
 }
 
-.username {
+#mimage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.righttxt {
 	color: #B2B4B3;
 	line-height: 2.2em;
 	float: right;
 }
 
-.name {
+.lefttxt {
 	color: #B2B4B3;
 	line-height: 2.2em;
 	float: left;

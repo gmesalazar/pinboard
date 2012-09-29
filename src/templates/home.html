@@ -1,9 +1,15 @@
+<!-- jinja2 template, inherits from "base.html" -->
+
+
 {% extends "base.html" %}
 
+<!--  -->
 {% block header %}
 <div id="header">
-	<span class="name"><a href="/">Home</a></span> <span class="username"><a
-		href="/pin">My Pins</a> - <b>{{username}}</b> - <a href={{'"' + headurl + '"'}}>{{text
-			}}</a></span>
+
+	<span class="lefttxt"><a href="/">Home</a></span> <span
+		class="righttxt"><a href="/pin">My Pins</a> - <b>{{username}}</b>
+		- <a href={{'"' + headurl + '"'}}>{{text }}</a></span>
+		
 </div>
 {% endblock %}
