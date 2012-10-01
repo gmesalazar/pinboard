@@ -1,6 +1,5 @@
 <!-- jinja2 template, inherits from "base.html" -->
 
-
 {% extends "base.html" %}
 
 <!--  -->
@@ -17,18 +16,25 @@
 <!--  -->
 {% endblock %}
 
+<!-- Block that appears before "Enter new pin" -->
+{% block display %}
 <!--  -->
-{% block box %}
-
-<div class="homebox">
-<div class="leftbox">
-    <a href="/pin"><img title="Pins" src="/templates/images/photo.png"/></a>
+{% for item in items %}
+<div class="box">
+	<p>
+		<a href={{"/pin/" ~ item.id }}><img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/></a>
+	</p>
+	<p id="caption">
+		{{ item.caption }} <br />
+		Created on {{ item.date }} <br />
+		
+        {% block partof %}
+        <!--  -->
+        {% endblock %}
+	</p>
 </div>
-<div class="rightbox">
-    <a href="/board"><img title="Boards" src="/templates/images/board.png"/></a>
-</div>
-</div>
+<br />
+{% endfor %}
+<!--  -->
 
 {% endblock %}
-<!--  -->
-

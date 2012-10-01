@@ -4,7 +4,7 @@
 
 <head>
 <meta charset=UTF-8>
-<title>HW4: Guilherme Salazar</title>
+<title>HW5: Guilherme Salazar</title>
 <link rel="stylesheet" type="text/css"
 	href="/templates/stylesheets/style.css" />
 </head>
@@ -14,7 +14,9 @@
 	{% block header %}
 	<div id="header">
 
-		<a href={{'"' + headurl + '"'}}>{{ text }}</a></span>
+		<p class="hfp">
+			<span class="righttxt"><a href={{'"' + headurl + '"'}}>{{ text }}</a></span>
+		</p>
 
 	</div>
 	{% endblock %}
@@ -25,12 +27,12 @@
 
 		<br />
 
-		<h1>Pinboard</h1>
+		<h1>Pinboard {{pagename}}</h1>
 
 		{% if exception %}
 		<!--  -->
 		{% block messagebox %}
-		<div id="exbox">
+		<div class="exbox">
 			<img id="mimage" src="/templates/images/warning.png" />
 			<p id="mheader">{{ message_header }}</p>
 			<p>{{ message_body }}</p>
@@ -50,15 +52,18 @@
 
 		<!-- Super block in which we'll display the content entered -->
 		{% block box %}
-		<div id="box">
+		<div class="box">
 
 			<p>Enter new pin</p>
 
 			<form action="/pin/" method="post">
-				<label for="urltextbox">Image URL: </label><input id="urltextbox"
-					type="text" name="url" /><br /> <label for="captiontextbox">Caption:
-				</label><input id="captiontextbox" type="text" name="caption" /><br /> <br />
-				<input type="submit" />
+				<label for="urltextbox">Image URL: </label> <input id="urltextbox"
+					type="text" name="url" /><br /> <label for="captiontextbox">Caption:</label>
+				<input id="captiontextbox" type="text" name="caption" /><br /> <br />
+
+				<input type="checkbox" name="privacy" value="private"
+					checked="checked">Private <br /> <br /> <input
+					class="rightalign" type="submit" />
 			</form>
 
 		</div>
@@ -67,20 +72,21 @@
 	</div>
 	{% endblock %}
 
-	<br />
-	<br />
-	<br />
-	<br />
-
 	<!--  -->
 	{% block footer %}
 	<div id="footer">
 
-		<span class="lefttxt">Guilherme Salazar Silva</span> <span
-			class="quote">"Quaerendo Invenietis" &ndash; JSB </span>
+		<p class="hfp">
+			<span class="lefttxt">Guilherme Salazar Silva</span> <span
+				class="quote">"Quaerendo Invenietis" &ndash; JSB </span>
+		</p>
 
 	</div>
 	{% endblock %}
+
+	<br />
+	<br />
+	<br />
 
 </body>
 

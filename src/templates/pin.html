@@ -1,27 +1,46 @@
 <!-- jinja2 template, inherits from "base.html" -->
 
-{% extends "thumbnails.html" %}
+{% extends "pthumbs.html" %}
 
+{% block partof %} 
+<br>Part of:<br>
+{% for board in boards %}
+<a href="/board/{{board.id}}">{{board.title}}</a> board<br>
+{% endfor %}
+{% endblock %}
 <!--  -->
 {% block box %}
-<div id="box">
+{% if editable %}
+<div class="box">
 	<!-- Super block in which we'll display the content entered -->
 
-	<p>Enter new pin</p>
+	<p>Enter new pin info</p>
 
 	<form action="" method="post">
 		<label for="urltextbox">Image URL: </label> <input id="urltextbox"
-			type="text" name="url" value={{'"' + (pins|first).imgUrl + '"' }}></input><br />
+			type="text" name="url" value="{{(items|first).imgUrl}}"></input><br />
 
 		<label for="captiontextbox">Caption:</label> <input
-			id="captiontextbox" type="text" name="caption" value={{'"' + (pins|first).caption + '"' }}></input><br />
-		<br /> <input type="hidden" name="action" value="update" /> <input
-			type="submit" value="Update this info" />
+			id="captiontextbox" type="text" name="caption" value="{{(items|first).caption}}"></input><br />
+		<br /> 
+		
+        <input type="checkbox" name="privacy" value="private" {{ private }}>Private <br />
+                
+        <br />
+		
+		<span class="leftalign">
+		  <input type="hidden" name="action" value="update" /> 
+		  <input type="submit" value="Update this info" />
+		</span>
+		
 	</form>
-
+	
 	<form action="" method="post">
-		<input type="hidden" name="action" value="delete" /> <input
-			type="submit" value="Delete this pin" />
+		<span class="rightalign">
+		  <input type="hidden" name="action" value="delete" /> 
+		  <input type="submit" value="Delete this pin" />
+		</span>
 	</form>
 </div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,70 @@
+<!-- jinja2 template, inherits from "pthumbs.html" -->
+
+{% extends "base.html" %} {% block header %}
+<div id="header">
+
+	<p class="hfp">
+		<span class="lefttxt"><a href="/">Home</a></span> <span
+			class="righttxt"><a href="/board">My Boards</a> - <a
+			href="/pin">My Pins</a> - <b>{{username}}</b> - <a href={{'"' + headurl + '"'}}>{{text
+				}}</a></span>
+	</p>
+
+</div>
+<!--  -->
+{% endblock %}
+
+<!-- Block that appears before "Enter new pin" -->
+{% block display %}
+<!--  -->
+{% for item in items %}
+<div class="box">
+	<p>
+		<a href={{"/board/" ~ item.id }}><img width="200" align="top"
+			src={{ '"' + item.imgUrl + '"' }}/></a>
+	</p>
+	<p id="caption">
+		{{ item.title }}<br /> Owner: {{item.owner }}
+	</p>
+</div>
+<br />
+{% endfor %}
+
+<!--  -->
+
+{% endblock %}
+
+<!--  -->
+{% block box %}
+{% if editable %}
+<div class="box">
+
+	<p>New board</p>
+
+	<form action="/board/" method="post">
+		<label for="titlebox">Title: </label> <input id="titletbox"
+			type="text" name="title" /><br /> <br /> <label for="coverbox">Cover
+			URL: </label> <input id="coverbox" type="text" name="coverurl" /><br /> <br />
+
+		<label for="addpinlist">Add pin: </label> 
+		<select id="addpinlist" name="addpinlist">
+		   <option value="--">--</option>
+		  {% for pin in allpins %}
+		      <option value="{{pin.id}}">{{ pin.caption }}</option>
+		  {% endfor %}
+		</select> <br /> <br /> <label for="delpinlist">Delete pin: </label> <select
+			id="delpinlist" name="delpinlist"> 
+			<option value="--">--</option>
+			{% for pin in boardpins
+			%}
+			<option value="{{pin.id}}">{{ pin.caption }}</option> {% endfor
+			%}
+		</select> <br /> <br/  > <input type="checkbox" name="privacy"
+			value="private" checked="checked">Private <br /> <br /> {%
+		block boardcontrols %} <input class="rightalign" type="submit" /> {%
+		endblock %}
+	</form>
+
+</div>
+{% endif %}
+{% endblock %}
