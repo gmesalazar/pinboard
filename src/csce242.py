@@ -166,10 +166,16 @@ class PinHandler(Util):
                 self.redirect('/pin/%s' % id)
                 
             else:
-                self.key = db.Key.from_path('Pin', long(id))
-                self.pin = db.get(self.key)
+                key = db.Key.from_path('Pin', long(id))
+                pin = db.get(key)
                 
-                self.pin.delete()
+                for boardId in pin.boards:
+                    key = db.Key.from_path('Board', boardId)
+                    board = db.get(key)
+                    board.pins.remove(long(id))
+                    board.save()
+                
+                pin.delete()
                 self.redirect('/pin')
             
 class PinsHandler(Util):
