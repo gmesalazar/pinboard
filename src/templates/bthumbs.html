@@ -21,7 +21,7 @@
 <!-- Block that appears before "Enter new pin" -->
 {% block display %}
 <!--  -->
-{% if items|count > 0 %}
+{% if items|count > 0 or editable %}
 {% for item in items %}
 <div class="box">
 	<p>
