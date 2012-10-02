@@ -20,8 +20,15 @@
 {% for item in items %}
 <div class="box">
 	<p>
-		<a href={{"/board/" ~ item.id }}><img width="200" align="top"
-			src={{ '"' + item.imgUrl + '"' }}/></a>
+		<a href={{"/board/" ~ item.id }}>
+		  
+		  {% if item.imgUrl %}
+		      <img class="thumbs" width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/>
+		  {% else %}
+		      <img class="thumbs" align="top" src="/templates/images/board.png"/>
+		  {% endif %}
+		  
+		</a>
 	</p>
 	<p id="caption">
 		{{ item.title }}<br /> Owner: {{item.owner }}

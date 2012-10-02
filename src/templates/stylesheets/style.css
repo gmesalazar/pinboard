@@ -66,6 +66,12 @@ body {
 	background: #ECD9DB;
 }
 
+.thumbs {
+	display:block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .homebox {
 	display: table;
 	margin: auto;
