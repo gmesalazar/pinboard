@@ -130,7 +130,7 @@ class PinHandler(Util):
                         'headurl': users.create_logout_url('/'),
                         'text': 'Logout',
                         'private': private,
-                        'pagename': '&ndash; Pin',
+                        'pagename': '&ndash; ' + pin.caption + ' Pin',
                         'editable': user == pin.owner
                     }
                     
@@ -278,7 +278,7 @@ class BoardHandler(Util):
                     'headurl': headUrl,
                     'text': text,
                     'private': privateAttr,
-                    'pagename': '&ndash; Board',
+                    'pagename': '&ndash; ' + board.title + ' Board',
                     'editable': user == board.owner
                 }
             
@@ -342,6 +342,7 @@ class BoardHandler(Util):
                     key = db.Key.from_path('Pin', pinId)
                     pin = db.get(key)
                     pin.boards.remove(board.key().id())
+                    pin.save()
                 
                 board.delete()
                 self.redirect('/board')

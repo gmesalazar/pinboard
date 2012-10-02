@@ -2,11 +2,13 @@
 
 {% extends "pthumbs.html" %}
 
-{% block partof %} 
+{% block partof %}
+{% if boards|count > 0 %}
 <br>Part of:<br>
 {% for board in boards %}
 <a href="/board/{{board.id}}">{{board.title}}</a> board<br>
 {% endfor %}
+{% endif %}
 {% endblock %}
 <!--  -->
 {% block box %}
