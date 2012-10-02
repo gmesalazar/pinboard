@@ -4,10 +4,14 @@
 <div id="header">
 
 	<p class="hfp">
-		<span class="lefttxt"><a href="/">Home</a></span> <span
-			class="righttxt"><a href="/board">My Boards</a> - <a
-			href="/pin">My Pins</a> - <b>{{username}}</b> - <a href={{'"' + headurl + '"'}}>{{text
-				}}</a></span>
+		<span class="lefttxt"><a href="/">Home</a></span> 
+		
+		<span class="righttxt">
+		  {% if editable %}
+			<a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
+		  {% endif %}
+			<a href="{{headurl}}">{{text}}</a>
+		</span>
 	</p>
 
 </div>
@@ -17,6 +21,7 @@
 <!-- Block that appears before "Enter new pin" -->
 {% block display %}
 <!--  -->
+{% if items|count > 0 %}
 {% for item in items %}
 <div class="box">
 	<p>
@@ -36,6 +41,11 @@
 </div>
 <br />
 {% endfor %}
+{% else %}
+<div class="box">
+    <p>There are no public boards!</p>
+</div>
+{% endif %}
 
 <!--  -->
 

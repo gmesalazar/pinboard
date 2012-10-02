@@ -8,9 +8,13 @@
 <div id="header">
 
 	<p class="hfp">
-		<span class="lefttxt"><a href="/">Home</a></span> <span
-			class="righttxt"><a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b>
-			- <a href={{'"' + headurl + '"'}}>{{text }}</a></span>
+		<span class="lefttxt"><a href="/">Home</a></span> 
+		
+		<span class="righttxt">
+		  {% if not anonymous %}
+		      <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
+		  {% endif %}
+		      <a href="{{headurl}}">{{text }}</a></span>
 	</p>
 
 </div>
@@ -22,11 +26,18 @@
 
 <div class="homebox">
 <div class="leftbox">
+    {% if not anonymous %}
+        {% set title = 'Boards' %}
+    {% else %}
+        {% set title = 'Public Boards' %}
+    {% endif %}
+    <a href="/board"><img title="{{title}}" src="/templates/images/board.png"/></a>
+</div>
+{% if not anonymous %}
+<div class="rightbox">
     <a href="/pin"><img title="Pins" src="/templates/images/photo.png"/></a>
 </div>
-<div class="rightbox">
-    <a href="/board"><img title="Boards" src="/templates/images/board.png"/></a>
-</div>
+{% endif %}
 </div>
 
 {% endblock %}

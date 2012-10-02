@@ -56,7 +56,7 @@ class Util(webapp2.RedirectHandler):
             
             self.template_values = {
                     'username': user.nickname() + ' ',
-                    'headurl': users.create_logout_url("/login"),
+                    'headurl': users.create_logout_url("/"),
                     'text': 'Logout',
                     'exception': True,
                     'message_header': 'Exceptional condition detected!',
@@ -75,15 +75,24 @@ class MainPage(Util):
         user = users.get_current_user()
         
         if user:
-            self.template_values = {
-                'username': user.nickname() + ' ',
-                'headurl': users.create_logout_url("/login"),
-                'text': 'Logout'
-            }
-            
-            self.render('home.html')
+            anonymous = False
+            username = user.nickname()
+            headUrl = users.create_logout_url('/')
+            text = 'Logout'            
         else:
-            self.redirect('/login')
+            anonymous = True
+            username = ''
+            headUrl = users.create_login_url('/')
+            text = 'Login'    
+           
+        self.template_values = {
+            'anonymous': anonymous,
+            'username': username,
+            'headurl': headUrl,
+            'text': text
+        }         
+        
+        self.render('home.html')
             
 class PinHandler(Util):
     
@@ -118,7 +127,7 @@ class PinHandler(Util):
                         'items': pins,
                         'boards': boards,
                         'username': user.nickname() + ' ',
-                        'headurl': users.create_logout_url('/login'),
+                        'headurl': users.create_logout_url('/'),
                         'text': 'Logout',
                         'private': private,
                         'pagename': '&ndash; Pin',
@@ -194,9 +203,10 @@ class PinsHandler(Util):
             self.template_values = {
                 'items': self.pins,
                 'username': user.nickname() + ' ',
-                'headurl': users.create_logout_url('/login'),
+                'headurl': users.create_logout_url('/'),
                 'text': 'Logout',
-                'pagename': '&ndash; Pins'
+                'pagename': '&ndash; Pins',
+                'editable': True
             }
         
             self.render('pthumbs.html')
@@ -224,53 +234,63 @@ class PinsHandler(Util):
 class BoardHandler(Util):
     
     def get(self, id):
-        user = users.get_current_user()        
+        
+        user = users.get_current_user()
         
         if user:
+            anonymous = False,
+            username = user.nickname()
+            headUrl = users.create_logout_url('/')
+            text = 'Logout'
         
-            key = db.Key.from_path('Board', long(id))
-            board = db.get(key)
+        else:
+            anonymous = True,
+            username = ''
+            headUrl = users.create_login_url('/')
+            text = 'Login'
+        
+        key = db.Key.from_path('Board', long(id))
+        board = db.get(key)
+        
+        if board:
             
-            if board:
-                
-                if not board.private or board.owner == user:
+            if not board.private or board.owner == user:
 
-                    if board.private == True:
-                        private = 'checked="checked"'
-                    else:
-                        private = ''
-                    
-                    allpins = Pin.all().filter("owner =", user)
-                    
-                    boardpins = set()
-                    for pinKey in board.pins:
-                        key = db.Key.from_path('Pin', long(pinKey))
-                        pin = db.get(key)
-                        boardpins.add(pin)
-                    
-                    self.template_values = {
-                        'allpins': allpins,
-                        'items': boardpins,
-                        'board': board,
-                        'username': user.nickname() + ' ',
-                        'headurl': users.create_logout_url('/login'),
-                        'text': 'Logout',
-                        'private': private,
-                        'pagename': '&ndash; Board',
-                        'editable': user == board.owner
-                    }
-                
-                    self.render('board.html')
+                if board.private == True:
+                    privateAttr = 'checked="checked"'
                 else:
-                    self.exceptionRender('Board not found; you were redirected to the main page.',
-                                     'home.html')     
-                    
+                    privateAttr = ''
+                
+                allpins = Pin.all().filter("owner =", user)
+                
+                boardpins = set()
+                for pinKey in board.pins:
+                    key = db.Key.from_path('Pin', long(pinKey))
+                    pin = db.get(key)
+                    boardpins.add(pin)
+                
+                self.template_values = {
+                    'anonymous': anonymous,
+                    'allpins': allpins,
+                    'items': boardpins,
+                    'board': board,
+                    'username': username,
+                    'headurl': headUrl,
+                    'text': text,
+                    'private': privateAttr,
+                    'pagename': '&ndash; Board',
+                    'editable': user == board.owner
+                }
+            
+                self.render('board.html')
             else:
                 self.exceptionRender('Board not found; you were redirected to the main page.',
-                                     'home.html')
-                  
+                                 'home.html')     
+                
         else:
-            self.redirect('/login')
+            self.exceptionRender('Board not found; you were redirected to the main page.',
+                                 'home.html')
+                  
 
     def post(self, id):
         
@@ -332,28 +352,37 @@ class BoardsHandler(Util):
         user = users.get_current_user()
         
         if user:
-        
-            # Quick and dirty solution for the absence of an OR operator... :p
-            self.q1 = Board.all().filter("private =", False).fetch(1000)
-            self.q2 = Board.all().filter("owner", user).filter("private =", True).fetch(1000)
-            self.boards = [] + self.q1 + self.q2
-            
-            pins = Pin.all().filter("owner =", user)
-                
-            self.template_values = {
-                'allpins': pins,
-                'items': self.boards,
-                'username': user.nickname() + ' ',
-                'headurl': users.create_logout_url('/login'),
-                'text': 'Logout',
-                'pagename': '&ndash; Boards',
-                'editable': True
-            }
-        
-            self.render('bthumbs.html')
-            
+            editable = True
+            username = user.nickname()
+            headUrl = users.create_logout_url('/')
+            text = 'Logout'
+            pagename = '&ndash; Boards'
         else:
-            self.redirect('login')
+            editable = False
+            username = ''
+            headUrl = users.create_login_url('/')
+            text = 'Login'
+            pagename = '&ndash; Public Boards'
+        
+        # Quick and dirty solution for the absence of an OR operator... :p
+        q1 = Board.all().filter("private =", False).fetch(1000)
+        q2 = Board.all().filter("owner", user).filter("private =", True).fetch(1000)
+        boards = [] + q1 + q2
+        
+        pins = Pin.all().filter("owner =", user)
+            
+        self.template_values = {
+            'allpins': pins,
+            'items': boards,
+            'username': username,
+            'headurl': headUrl,
+            'text': text,
+            'pagename': pagename,
+            'editable': editable
+        }
+    
+        self.render('bthumbs.html')
+            
 
     def post(self):
 
@@ -384,7 +413,7 @@ class BoardsHandler(Util):
 '''
 @summary: Class containing authentication handlers
 '''
-class Auth(Util):
+class LoginHandler(Util):
     
     def get(self):
         
@@ -409,6 +438,6 @@ class NotFoundPageHandler(Util):
 app = webapp2.WSGIApplication([('/', MainPage), ('/pin/(.[0-9]*)/?', PinHandler),
                                ('/board/(.[0-9]*)/?', BoardHandler),
                                ('/board/?', BoardsHandler),
-                               ('/pin/?', PinsHandler), ('/login', Auth),
+                               ('/pin/?', PinsHandler), ('/login', LoginHandler),
                                ('/.*', NotFoundPageHandler)],
                                debug=True)
