@@ -94,6 +94,12 @@ body {
 	text-align: center;
 }
 
+.centerbottom {
+	text-align: center;
+	bottom: 0px;
+	left: 0px;
+}
+
 #caption {
 	text-align: center;
 }
@@ -102,7 +108,6 @@ body {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
-	margin-left: auto;
 }
 
 .leftalign {

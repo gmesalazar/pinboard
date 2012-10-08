@@ -1,5 +1,5 @@
 application: csce242-gmesalazar
-version: 5
+version: 6
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -11,6 +11,9 @@ handlers:
   
 - url: /templates/images
   static_dir: templates/images
+
+- url: /templates/js
+  static_dir: templates/js
 
 - url: /.*
   script: csce242.app

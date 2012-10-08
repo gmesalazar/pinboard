@@ -1,9 +1,5 @@
-<!-- jinja2 template, inherits from "base.html" -->
-
-
 {% extends "base.html" %}
 
-<!--  -->
 {% block header %}
 <div id="header">
 
@@ -39,6 +35,17 @@
 </div>
 {% endif %}
 </div>
+
+{% if not anonymous %}
+<p class="centerbottom">Grab our <a id="bookmarklet" href="">Pin It</a> bookmarklet and put it on your bookmarks bar!</p>
+    <!-- The script below sets the href above with the correct host, so it'll work both on localhost:8080 
+          and on the real host. (by Prof. Vidal) -->
+<script>
+link = document.getElementById('bookmarklet');
+link.href = "javascript:(function(){ _my_script=document.createElement('SCRIPT');_my_script.type='text/javascript';_my_script.src='http://" 
+    + location.host + "/templates/js/bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_my_script);})();";
+</script> 
+{% endif %}
 
 {% endblock %}
 <!--  -->
