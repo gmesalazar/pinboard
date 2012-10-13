@@ -4,7 +4,7 @@ html {
 	margin: 2px;
 }
 
-input,select,select{
+input,select{
 	display: inline;
 	float: left;
 }
