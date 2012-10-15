@@ -100,8 +100,11 @@ body {
 	left: 0px;
 }
 
-#caption {
+.centralized {
 	text-align: center;
+	display: table;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #mimage {

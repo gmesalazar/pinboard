@@ -26,14 +26,14 @@
 		<a href={{"/board/" ~ item.id }}>
 		  
 		  {% if item.imgUrl %}
-		      <img class="thumbs" width="10" align="top" src={{ '"' + item.imgUrl + '"' }}/>
+		      <img class="thumbs" width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/>
 		  {% else %}
 		      <img class="thumbs" align="top" src="/templates/images/board.png"/>
 		  {% endif %}
 		  
 		</a>
 	</p>
-	<p id="caption">
+	<p class="centralized">
 		{{ item.title }}<br /> Owner: {{item.owner }}
 	</p>
 </div>

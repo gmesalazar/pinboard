@@ -157,24 +157,7 @@ class PinHandler(Util):
         
             self.action = self.request.get('action')
         
-            if self.action == 'update':
-                newUrl = self.request.get('url')
-                newCaption = self.request.get('caption')
-                
-                pin.imgUrl = newUrl
-                pin.caption = newCaption
-                
-                checkbox = self.request.get('privacy')
-                
-                if checkbox == 'private':
-                    pin.private = True
-                else:
-                    pin.private = False
-                
-                pin.save()
-                self.redirect('/pin/%s' % id)
-                
-            else:
+            if self.action == 'delete':
                 key = db.Key.from_path('Pin', long(id))
                 pin = db.get(key)
                 
@@ -186,6 +169,20 @@ class PinHandler(Util):
                 
                 pin.delete()
                 self.redirect('/pin')
+                
+            else:
+                newCaption = self.request.get('caption')
+                
+                pin.caption = newCaption
+                
+                checkbox = self.request.get('privacy')
+                
+                if checkbox == 'true':
+                    pin.private = True
+                else:
+                    pin.private = False
+                
+                pin.save()
             
 class PinsHandler(Util):
     

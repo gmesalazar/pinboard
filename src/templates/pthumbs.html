@@ -26,19 +26,25 @@
 <div class="box">
 	<p>
 	   {% if editable %}
-	       <a href={{"/pin/" ~ item.id }}><img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/></a>
+	       <a class="thumbs" href={{"/pin/" ~ item.id }}><img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/></a>
 	   {% else %}
 	       <img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/>
 	   {% endif %}
+    
+        <div class="centralized">
+            <div>Created on {{ item.date }}</div> 
+            <div id="caption">{{ item.caption }}</div>
+        </div>
+    
 	</p>
-	<p id="caption">
-		{{ item.caption }} <br />
-		Created on {{ item.date }} <br />
-		
-        {% block partof %}
+
+	
+	{% block partof %}
         <!--  -->
-        {% endblock %}
-	</p>
+    {% endblock %}
+	
+    {% block pinfo %}
+    {% endblock %}
 </div>
 <br />
 {% endfor %}
