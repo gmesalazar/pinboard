@@ -1,61 +1,53 @@
 console.log("script.js loaded")
 
-function handlerIn(e) {
+function captionHandlerHoverIn(e) {
 	caption = document.getElementById('caption');
 	caption.style.background = 'white';
 }
 
-function handlerOut(e) {
+function captionHandlerHoverOut(e) {
 	caption = document.getElementById('caption');
 	caption.style.background = '#ECD9DB';
 }
 
-function handlerKeyPress(e) {
+function captionHandlerKeyPress(e) {
+	
 	var keycode = (e.keyCode ? e.keyCode : e.which);
 
 	if (keycode == '13') {
+
+		e.preventDefault();
+		
 		console.log("ENTER key pressed");
-
-		var self = $(this);
-		self.value = self.val();
-
-		var privacy = $('input[name=privacy]').is(':checked');
-
-		$('#captionDIV').replaceWith('<div id="caption">' + self.value + '</div>');
-
-		$.ajax('', {
-			type : 'POST',
-			data : {
-				caption : self.value,
-				privacy : privacy
-			},
-			success : function() {
-				console.log('Success!');
-			},
-			error : function() {
-				console.log('Error at server:');
-			}
-		}).done(function() {
-			location.reload();
-		});
-
-		e.stopPropagation();
-
+		
+		$('#caption').blur();
 	}
+	
+	e.stopPropagation();
 }
 
-function handlerClick(e) {
-	console.log('User clicked');
-
+function captionHandlerFocusOut(e) {
 	var self = $(this);
 	self.value = self.text();
 
-	$('#caption').replaceWith(
-			'<div id="captionDIV"><input id="captionTB" type="text" value="'
-					+ self.value + '" name="caption"/><br/><br/></div>');
+	var privacy = $('input[name=privacy]').is(':checked');
 
-	$('#captionTB').keypress(handlerKeyPress);
-
+	$.ajax('', {
+		type : 'POST',
+		data : {
+			caption : self.value,
+			privacy : privacy
+		},
+		success : function() {
+			document.getElementById('pagename').innerText = '– ' + self.value;
+			console.log('Success!');
+		},
+		error : function() {
+			console.log('Error at server:');
+		}
+	});
+	
+	e.stopPropagation();
 }
 
 function checkboxHandler(e) {
@@ -75,15 +67,14 @@ function checkboxHandler(e) {
 		error : function() {
 			console.log('Error at server:');
 		}
-	}).done(function() {
-		location.reload();
 	});
 
 	e.stopPropagation();
 }
 
 $(document).ready(function() {
-	$('#caption').hover(handlerIn, handlerOut);
-	$('#caption').on("click", handlerClick);
-	$('input[name=privacy]').on("click", checkboxHandler);
+	$('#caption').hover(captionHandlerHoverIn, captionHandlerHoverOut);
+	$('#caption').keypress(captionHandlerKeyPress);
+	$('#caption').focusout(captionHandlerFocusOut);
+	$('#privacy').click(checkboxHandler);
 })
