@@ -1,17 +1,20 @@
 {% extends "pthumbs.html" %}
 
 {% block partof %}
-
 {% if boards|count > 0 %}
 
-<br>Part of:<br>
+<div class="centralized">
+Part of: 
+<br />
 {% for board in boards %}
-<a href="/board/{{board.id}}">{{board.title}}</a> board<br>
+<a href="/board/{{board.id}}">{{board.title}}</a> board
+<br /> <br />
 {% endfor %}
+</div>
 
 {% endif %}
-
 {% endblock %}
+
 
 {% block box %}
 {% endblock %}
@@ -36,4 +39,13 @@
 	</form>
 {% endif %}
 
+{% endblock %}
+
+{% block owner %}
+{% if not editable %}
+    <div class="centralized">
+        <div>Owner: {{(items|first).owner}}</div>
+        
+    </div>
+{% endif %}
 {% endblock %}

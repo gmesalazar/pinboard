@@ -55,6 +55,11 @@ function captionHandlerFocusOut(e) {
 	e.stopPropagation();
 }
 
+function captionHandlerClick() {
+	captionDiv = document.getElementById('caption');
+	captionDiv.setAttribute('contenteditable', true);
+}
+
 /* Privacy checkbox handler */
 
 function checkboxHandler(e) {
@@ -85,5 +90,6 @@ $(document).ready(function() {
 	$('#caption').hover(captionHandlerHoverIn, captionHandlerHoverOut);
 	$('#caption').keypress(captionHandlerKeyPress);
 	$('#caption').focusout(captionHandlerFocusOut);
+	$('#caption').click(captionHandlerClick);
 	$('#privacy').click(checkboxHandler);
 });

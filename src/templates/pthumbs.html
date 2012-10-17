@@ -7,7 +7,7 @@
         <span class="lefttxt"><a href="/">Home</a></span> 
         
         <span class="righttxt">
-          {% if not private %}
+          {% if not private or editable %}
             <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
           {% endif %}
             <a href={{'"' + headurl + '"'}}>{{text}}</a>
@@ -23,15 +23,16 @@
 {% for item in items %}
 <div class="box">
 	<p>
-	   {% if editable %}
-	       <a class="thumbs" href={{"/pin/" ~ item.id }}><img width="200" align="top" src="{{item.imgUrl}}"></a>
-	   {% else %}
-	       <img width="200" align="top" src="{{item.imgUrl}}">
-	   {% endif %}
+	   <a class="thumbs" href="{{'/pin/' ~ item.id }}"><img width="200" align="top" src="{{item.imgUrl}}"></a>
+	   
+	   {% block owner %}
+	   {% endblock %}
+	   
 	   <div class="centralized">
 	       <div>Created on {{item.date}}</div>
-	       <div id="caption" contenteditable="true">{{item.caption}}</div>
+	       <div id="caption">{{item.caption}}</div>
 	   </div>
+	   
 	</p>
 	
 	{% block partof %}
