@@ -1,7 +1,8 @@
 {% extends "pthumbs.html" %}
 
-<!--  -->
-{% block box %} {% if editable %}
+{% block box %} 
+
+{% if editable %}
 <div class="box">
 
 	<p>Board info</p>
@@ -20,9 +21,11 @@
 		<label for="addpinlist">Add pin: </label> 
 		<select id="addpinlist" name="addpinlist">
 		    <option value="--">--</option>
+		    
 		  {% for pin in allpins %}
-			<option value="{{pin.id}}">{{ pin.caption }}</option> 
+			<option value="{{pin.id}}">{{ pin.caption }}</option>
 		  {% endfor%}
+		  
 		</select> 
 		
 		<br /> <br /> 
@@ -31,9 +34,11 @@
 		
 		<select id="delpinlist" name="delpinlist"> 
 		    <option value="--">--</option>
+		    
 		  {% for pin in items %}
 			<option value="{{pin.id}}">{{ pin.caption }}</option>
 		  {% endfor%}
+		  
 		</select> 
 		
 		<br /> <br />
@@ -53,4 +58,6 @@
 		</span>
 	</form>
 </div>
-{% endif %} {% endblock %}
+{% endif %} 
+
+{% endblock %}

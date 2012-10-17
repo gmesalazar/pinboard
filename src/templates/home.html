@@ -10,30 +10,32 @@
 		  {% if not anonymous %}
 		      <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
 		  {% endif %}
-		      <a href="{{headurl}}">{{text }}</a></span>
+		      <a href="{{headurl}}">{{text }}</a>
+		</span>
 	</p>
 
 </div>
-<!--  -->
 {% endblock %}
 
-<!--  -->
 {% block box %}
-
 <div class="homebox">
-<div class="leftbox">
-    {% if not anonymous %}
-        {% set title = 'Boards' %}
-    {% else %}
-        {% set title = 'Public Boards' %}
-    {% endif %}
-    <a href="/board"><img title="{{title}}" src="/templates/images/board.png"/></a>
-</div>
-{% if not anonymous %}
-<div class="rightbox">
-    <a href="/pin"><img title="Pins" src="/templates/images/photo.png"/></a>
-</div>
-{% endif %}
+
+	<div class="leftbox">
+	    {% if not anonymous %}
+	        {% set title = 'Boards' %}
+	    {% else %}
+	        {% set title = 'Public Boards' %}
+	    {% endif %}
+	    
+	    <a href="/board"><img title="{{title}}" src="/templates/images/board.png"/></a>
+	</div>
+	
+	{% if not anonymous %}
+	<div class="rightbox">
+	    <a href="/pin"><img title="Pins" src="/templates/images/photo.png"/></a>
+	</div>
+	{% endif %}
+	
 </div>
 
 {% if not anonymous %}

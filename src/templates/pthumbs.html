@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-<!--  -->
 {% block header %}
 <div id="header">
 
@@ -8,7 +7,7 @@
         <span class="lefttxt"><a href="/">Home</a></span> 
         
         <span class="righttxt">
-          {% if editable %}
+          {% if not private %}
             <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
           {% endif %}
             <a href={{'"' + headurl + '"'}}>{{text}}</a>
@@ -16,39 +15,34 @@
 	</p>
 
 </div>
-<!--  -->
+
 {% endblock %}
 
-<!-- Block that appears before "Enter new pin" -->
 {% block display %}
-<!--  -->
+
 {% for item in items %}
 <div class="box">
 	<p>
 	   {% if editable %}
-	       <a class="thumbs" href={{"/pin/" ~ item.id }}><img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/></a>
+	       <a class="thumbs" href={{"/pin/" ~ item.id }}><img width="200" align="top" src="{{item.imgUrl}}"></a>
 	   {% else %}
-	       <img width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/>
+	       <img width="200" align="top" src="{{item.imgUrl}}">
 	   {% endif %}
-    
-        <div class="centralized">
-            <div>Created on {{ item.date }}</div> 
-            <div id="caption" contenteditable="true">{{ item.caption }}</div>
-        </div>
-    
+	   <div class="centralized">
+	       <div>Created on {{item.date}}</div>
+	       <div id="caption" contenteditable="true">{{item.caption}}</div>
+	   </div>
 	</p>
-
 	
 	{% block partof %}
-        <!--  -->
     {% endblock %}
 	
     {% block pinfo %}
     {% endblock %}
 </div>
-<br />
-{% endfor %}
 
-<!--  -->
+<br />
+
+{% endfor %}
 
 {% endblock %}

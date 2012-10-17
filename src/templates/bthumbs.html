@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% block header %}
+{% extends "base.html" %}
+
+{% block header %}
 <div id="header">
 
 	<p class="hfp">
@@ -13,13 +15,13 @@
 	</p>
 
 </div>
-<!--  -->
 {% endblock %}
 
 <!-- Block that appears before "Enter new pin" -->
 {% block display %}
-<!--  -->
+
 {% if items|count > 0 or editable %}
+
 {% for item in items %}
 <div class="box">
 	<p>
@@ -39,18 +41,17 @@
 </div>
 <br />
 {% endfor %}
+
 {% else %}
 <div class="box">
     <p>There are no public boards!</p>
 </div>
 {% endif %}
 
-<!--  -->
-
 {% endblock %}
 
-<!--  -->
 {% block box %}
+
 {% if editable %}
 <div class="box">
 
@@ -64,20 +65,33 @@
 		<label for="addpinlist">Add pin: </label> 
 		<select id="addpinlist" name="addpinlist">
 		   <option value="--">--</option>
+		   
 		  {% for pin in allpins %}
 		      <option value="{{pin.id}}">{{ pin.caption }}</option>
 		  {% endfor %}
-		</select> <br /> <br /> <label for="delpinlist">Delete pin: </label> <select
-			id="delpinlist" name="delpinlist"> 
+		  
+		</select>
+		
+		<br /> <br /> 
+		
+		<label for="delpinlist">Delete pin: </label> 
+		<select id="delpinlist" name="delpinlist"> 
 			<option value="--">--</option>
-			{% for pin in boardpins
-			%}
-			<option value="{{pin.id}}">{{ pin.caption }}</option> {% endfor
-			%}
-		</select> <br /> <br/  > <input type="checkbox" name="privacy"
-			value="private" checked="checked">Private <br /> <br /> {%
-		block boardcontrols %} <input class="rightalign" type="submit" /> {%
-		endblock %}
+			
+			{% for pin in boardpins %}
+			<option value="{{pin.id}}">{{ pin.caption }}</option> 
+			{% endfor %}
+		</select> 
+		
+		<br /> <br /> 
+		
+		<input type="checkbox" name="privacy" value="private" checked="checked">Private 
+		
+		<br /> <br /> 
+			
+		{% block boardcontrols %} 
+		<input class="rightalign" type="submit" /> 
+		{% endblock %}
 	</form>
 
 </div>

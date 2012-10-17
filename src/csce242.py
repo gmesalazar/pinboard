@@ -126,7 +126,7 @@ class PinHandler(Util):
                     self.template_values = {
                         'items': pins,
                         'boards': boards,
-                        'username': user.nickname() + ' ',
+                        'username': user.nickname(),
                         'headurl': users.create_logout_url('/'),
                         'text': 'Logout',
                         'private': private,
@@ -242,7 +242,7 @@ class BoardHandler(Util):
         
         else:
             anonymous = True,
-            username = ''
+            username = 'anonymous'
             headUrl = users.create_login_url('/')
             text = 'Login'
         
