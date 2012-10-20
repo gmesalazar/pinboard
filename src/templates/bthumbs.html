@@ -1,26 +1,13 @@
 {% extends "base.html" %}
 
-{% block header %}
-<div id="header">
-
-	<p class="hfp">
-		<span class="lefttxt"><a href="/">Home</a></span> 
-		
-		<span class="righttxt">
-		  {% if editable %}
-			<a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
-		  {% endif %}
-			<a href="{{headurl}}">{{text}}</a>
-		</span>
-	</p>
-
-</div>
-{% endblock %}
-
 <!-- Block that appears before "Enter new pin" -->
 {% block display %}
+{% if anonymous and items|count == 0 %}
+<div class="box">
+    <p>There are no public boards!</p>
+</div>
 
-{% if items|count > 0 or editable %}
+{% elif items|count > 0 %}
 
 {% for item in items %}
 <div class="box">
@@ -28,44 +15,45 @@
 		<a href={{"/board/" ~ item.id }}>
 		  
 		  {% if item.imgUrl %}
-		      <img class="thumbs" width="200" align="top" src={{ '"' + item.imgUrl + '"' }}/>
+		      <img class="thumbs" width="200" align="top" src="{{item.imgUrl}}"/>
 		  {% else %}
-		      <img class="thumbs" align="top" src="/templates/images/board.png"/>
+		      <img class="thumbs" align="top" src="/static/images/board.png"/>
 		  {% endif %}
 		  
 		</a>
-	</p>
-	<p class="centralized">
-		{{ item.title }}<br /> Owner: {{item.owner }}
+		
+		<div class="centralized">
+            {{ item.title }}<br /> Owner: {{item.owner }}
+        </div>
 	</p>
 </div>
 <br />
 {% endfor %}
-
-{% else %}
-<div class="box">
-    <p>There are no public boards!</p>
-</div>
 {% endif %}
 
 {% endblock %}
 
 {% block box %}
-
-{% if editable %}
+{% if not anonymous %}
 <div class="box">
 
 	<p>New board</p>
 
 	<form action="/board/" method="post">
-		<label for="titlebox">Title: </label> <input id="titletbox"
-			type="text" name="title" /><br /> <br /> <label for="coverbox">Cover
-			URL: </label> <input id="coverbox" type="text" name="coverurl" /><br /> <br />
+		<label for="titlebox">Title: </label> 
+		<input id="titletbox" type="text" name="title" />
+		
+		<br /> <br /> 
+		
+		<label for="coverbox">Cover URL: </label> 
+		<input id="coverbox" type="text" name="coverurl" />
+		
+		<br /> <br />
 
 		<label for="addpinlist">Add pin: </label> 
 		<select id="addpinlist" name="addpinlist">
+		
 		   <option value="--">--</option>
-		   
 		  {% for pin in allpins %}
 		      <option value="{{pin.id}}">{{ pin.caption }}</option>
 		  {% endfor %}

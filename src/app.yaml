@@ -6,17 +6,11 @@ threadsafe: true
 
 handlers:
 
-- url: /templates/stylesheets
-  static_dir: templates/stylesheets
+- url: /static/
+  static_dir: static/
   
-- url: /templates/images
-  static_dir: templates/images
-
-- url: /templates/js
-  static_dir: templates/js
-
 - url: /.*
-  script: csce242.app
+  script: main.app
   
 libraries:
 - name: jinja2

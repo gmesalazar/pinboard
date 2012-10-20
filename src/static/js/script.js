@@ -5,6 +5,8 @@ console.log("script.js loaded")
 function captionHandlerHoverIn(e) {
 	caption = document.getElementById('caption');
 	caption.style.background = 'white';
+	captionDiv = document.getElementById('caption');
+	captionDiv.setAttribute('contenteditable', true);
 }
 
 function captionHandlerHoverOut(e) {
@@ -17,9 +19,9 @@ function captionHandlerHoverOut(e) {
 function captionHandlerKeyPress(e) {
 	
 	var keycode = (e.keyCode ? e.keyCode : e.which);
-
+	
 	if (keycode == '13') {
-
+		
 		e.preventDefault();
 		
 		console.log("ENTER key pressed");
@@ -41,10 +43,11 @@ function captionHandlerFocusOut(e) {
 		type : 'POST',
 		data : {
 			caption : self.value,
-			privacy : privacy
+			privacy : privacy,
+			action: 'update'
 		},
 		success : function() {
-			document.getElementById('pagename').innerText = '– ' + self.value + ' Pin';
+			document.getElementById('pagename').innerText = self.value;
 			console.log('Success!');
 		},
 		error : function() {
@@ -53,11 +56,6 @@ function captionHandlerFocusOut(e) {
 	});
 	
 	e.stopPropagation();
-}
-
-function captionHandlerClick() {
-	captionDiv = document.getElementById('caption');
-	captionDiv.setAttribute('contenteditable', true);
 }
 
 /* Privacy checkbox handler */
@@ -71,7 +69,8 @@ function checkboxHandler(e) {
 		type : 'POST',
 		data : {
 			caption : caption,
-			privacy : privacy
+			privacy : privacy,
+			action: 'update'
 		},
 		success : function() {
 			console.log('Success!');
@@ -90,6 +89,5 @@ $(document).ready(function() {
 	$('#caption').hover(captionHandlerHoverIn, captionHandlerHoverOut);
 	$('#caption').keypress(captionHandlerKeyPress);
 	$('#caption').focusout(captionHandlerFocusOut);
-	$('#caption').click(captionHandlerClick);
 	$('#privacy').click(checkboxHandler);
 });

@@ -23,8 +23,8 @@ h1.innerText = 'Pinboard';
 
 document.body.appendChild(h1);
 
-//hostName = 'csce242-gmesalazar.appspot.com';
-hostName = 'localhost:8080';
+hostName = 'csce242-gmesalazar.appspot.com';
+//hostName = 'localhost:8080';
 locationHost = 'http://' + hostName + '/pin/';
 
 for (i = 0; i < imgsArr.length; i++) {

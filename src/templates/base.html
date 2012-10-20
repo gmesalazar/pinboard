@@ -2,89 +2,79 @@
 
 <html>
 
-<head>
-<meta charset=UTF-8>
-<title>HW7: Guilherme Salazar</title>
-<link rel="stylesheet" type="text/css" href="/templates/stylesheets/style.css" />
-</head>
+	<head>
+		<meta charset=UTF-8>
+		<title>HW7: Guilherme Salazar</title>
+		<link rel="stylesheet" type="text/css" href="/static/stylesheets/style.css" />
+	</head>
 
-<body>
-	{% block header %}
-	<div id="header">
+	<body>
+	
+	   {% block header %}
+       <div id="header">
 
-		<p class="hfp">
-			<span class="righttxt"><a href="{{headurl}}">{{ text }}</a></span>
-		</p>
+	   <p class="hfp">
+	       <span class="lefttxt"><a href="/">Home</a></span> 
+	       <span class="righttxt">
+	           {% if not anonymous %}
+	           <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
+	           {% endif %}
+	           <a href="{{headurl}}">{{text}}</a>
+	       </span>
+	   </p>
 
-	</div>
-	{% endblock %}
-
-	{% block content %}
-	<div id="content">
-
+        </div>
+        {% endblock %}
+	
+		{% block content %}
+		<div id="content">
+	
+			<br />
+	
+			<h1>
+			     Pinboard {% if objectname %} &ndash; <span id="pagename">{{objectname}}</span> {{pagecat}}
+			     {% elif pagecat %} &ndash; {{pagecat}} {% endif %}
+			</h1>
+	   
+	        <br />
+	
+			{% if exception %}
+	
+			{% block messagebox %}
+			<div class="exbox">
+				<img id="mimage" alt="Warning Image" src="/static/images/warning.png"/>
+				<p id="mheader">{{ message_header }}</p>
+				<p>{{ message_body }}</p>
+			</div>
+			{% endblock %}
+	
+			<br /> <br />
+	
+			{% endif %}
+	
+	        <!-- Super block in which a pin (or a board) is displayed -->        
+	        {% block display %}
+	        {% endblock %}
+	
+			<!-- Super block in which a new pin is entered -->
+			{% block box %}
+			{% endblock %}
+	
+		</div>
+		{% endblock %}
+	
+		{% block footer %}
+		<div id="footer">
+			<p class="hfp">
+				<span class="centertxt">design by <span class="myname">Guilherme Salazar Silva</span>
+			</p>
+		</div>
+		{% endblock %}
+	
 		<br />
-
-		<h1>Pinboard <span id="pagename">{{pagename}}</span></h1>
-
-		{% if exception %}
-
-		{% block messagebox %}
-		<div class="exbox">
-			<img id="mimage" alt="Warning Image" src="/templates/images/warning.png"/>
-			<p id="mheader">{{ message_header }}</p>
-			<p>{{ message_body }}</p>
-		</div>
-		{% endblock %}
-
-		<br /> <br />
-
-		{% endif %}
-
-		{% block display %}
-		{% endblock %}
-
-		<!-- Super block in which we'll display the content entered -->
-		{% block box %}
-		<div class="box">
-
-			<p>Enter new pin</p>
-
-			<form action="/pin/" method="post">
-				<label for="urltextbox">Image URL: </label> 
-				<input id="urltextbox" type="text" name="url" />
-				
-				<br /> 
-				
-				<label for="captiontextbox">Caption:</label>
-				<input id="captiontextbox" type="text" name="caption"/>
-				
-				<br /> 
-				<br />
-
-				<input type="checkbox" name="privacy" value="private"
-					checked="checked">Private <br /> <br /> <input
-					class="rightalign" type="submit" />
-			</form>
-
-		</div>
-		{% endblock %}
-
-	</div>
-	{% endblock %}
-
-	{% block footer %}
-	<div id="footer">
-		<p class="hfp">
-			<span class="lefttxt">Guilherme Salazar Silva</span> 
-			<span class="quote">"Quaerendo Invenietis" &ndash; JSB </span>
-		</p>
-	</div>
-	{% endblock %}
-
-	<br />
-	<br />
-	<br />
-
-</body>
+		<br />
+		<br />
+	
+	</body>
 
 </html>

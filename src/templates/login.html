@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
-<!-- Block that appears before "Enter new pin" -->
+{% block header %}
+<div id="header">
+    <p class="hfp">
+        <span class="righttxt"><a href="{{headurl}}">{{ text }}</a></span>
+    </p>
+</div>
+{% endblock %}
 
 {% block box %}
 <div class="box">

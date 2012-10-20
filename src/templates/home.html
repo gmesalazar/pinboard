@@ -5,7 +5,6 @@
 
 	<p class="hfp">
 		<span class="lefttxt"><a href="/">Home</a></span> 
-		
 		<span class="righttxt">
 		  {% if not anonymous %}
 		      <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
@@ -21,18 +20,18 @@
 <div class="homebox">
 
 	<div class="leftbox">
-	    {% if not anonymous %}
-	        {% set title = 'Boards' %}
-	    {% else %}
+	    {% if anonymous %}
 	        {% set title = 'Public Boards' %}
+	    {% else %}
+            {% set title = 'Boards' %}
 	    {% endif %}
 	    
-	    <a href="/board"><img title="{{title}}" src="/templates/images/board.png"/></a>
+	    <a href="/board"><img title="{{title}}" src="/static/images/board.png"/></a>
 	</div>
 	
 	{% if not anonymous %}
 	<div class="rightbox">
-	    <a href="/pin"><img title="Pins" src="/templates/images/photo.png"/></a>
+	    <a href="/pin"><img title="Pins" src="/static/images/photo.png"/></a>
 	</div>
 	{% endif %}
 	
@@ -45,10 +44,8 @@
 <script>
 link = document.getElementById('bookmarklet');
 link.href = "javascript:(function(){ _my_script=document.createElement('SCRIPT');_my_script.type='text/javascript';_my_script.src='http://" 
-    + location.host + "/templates/js/bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_my_script);})();";
+    + location.host + "/static/js/bookmarklet.js?x='+(Math.random());document.getElementsByTagName('head')[0].appendChild(_my_script);})();";
 </script> 
 {% endif %}
 
 {% endblock %}
-<!--  -->
-

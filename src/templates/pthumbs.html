@@ -1,23 +1,5 @@
 {% extends "base.html" %}
 
-{% block header %}
-<div id="header">
-
-	<p class="hfp">
-        <span class="lefttxt"><a href="/">Home</a></span> 
-        
-        <span class="righttxt">
-          {% if not private or editable %}
-            <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
-          {% endif %}
-            <a href={{'"' + headurl + '"'}}>{{text}}</a>
-        </span>
-	</p>
-
-</div>
-
-{% endblock %}
-
 {% block display %}
 
 {% for item in items %}
@@ -46,4 +28,29 @@
 
 {% endfor %}
 
+{% endblock %}
+
+{% block box %}
+<div class="box">
+
+    <p>Enter new pin</p>
+
+    <form action="/pin/" method="post">
+        <label for="urltextbox">Image URL: </label> 
+        <input id="urltextbox" type="text" name="url" />
+        
+        <br /> 
+        
+        <label for="captiontextbox">Caption:</label>
+        <input id="captiontextbox" type="text" name="caption"/>
+        
+        <br /> 
+        <br />
+
+        <input type="checkbox" name="privacy" value="private"
+            checked="checked">Private <br /> <br /> <input
+            class="rightalign" type="submit" />
+    </form>
+
+</div>
 {% endblock %}
