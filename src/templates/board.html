@@ -14,7 +14,54 @@
 
 <script type="text/javascript" src="/static/js/boardscript.js"></script>
 
+<<<<<<< HEAD
 <div class="box">
+=======
+	<form action="" method="post">
+		<label for="titlebox">Title: </label> 
+		<input id="titletbox" type="text" name="title" value="{{board.title}}"></input>
+		
+		<br /><br /> 
+		
+		<label for="coverbox">Cover URL: </label> 
+		<input id="coverbox" type="text" name="coverurl" value="{{board.imgUrl}}"></input>
+		
+		<br /><br /> 
+		
+		<label for="addpinlist">Add pin: </label> 
+		<select id="addpinlist" name="addpinlist">
+		    <option value="--">--</option>
+		    
+		  {% for pin in allpins %}
+			<option value="{{pin.id}}">{{ pin.caption }}</option>
+		  {% endfor%}
+		  
+		</select> 
+		
+		<br /> <br /> 
+		
+		<label for="delpinlist">Delete pin: </label> 
+		
+		<select id="delpinlist" name="delpinlist"> 
+		    <option value="--">--</option>
+		    
+		  {% for pin in items %}
+	      <option value="{{pin.id}}">{{ pin.caption }}</option>
+		  {% endfor%}
+		  
+		</select> 
+		
+		<br /> <br />
+		
+		<input type="checkbox" name="privacy" value="private" {% if board.private %} checked="checked" {% endif %} /> Private 
+		
+		<br /> <br />
+		
+		<span class="leftalign"> <input type="hidden" name="action"
+            value="update" /> <input type="submit" value="Update this info" />
+        </span>
+	</form>
+>>>>>>> 24c0b2b4effc6b699f00d2809f3f56833b1534d7
 
     <div class="centralized">
         <p>Board info</p>
