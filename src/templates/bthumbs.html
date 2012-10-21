@@ -62,17 +62,6 @@
 		
 		<br /> <br /> 
 		
-		<label for="delpinlist">Delete pin: </label> 
-		<select id="delpinlist" name="delpinlist"> 
-			<option value="--">--</option>
-			
-			{% for pin in boardpins %}
-			<option value="{{pin.id}}">{{ pin.caption }}</option> 
-			{% endfor %}
-		</select> 
-		
-		<br /> <br /> 
-		
 		<input type="checkbox" name="privacy" value="private" checked="checked">Private 
 		
 		<br /> <br /> 

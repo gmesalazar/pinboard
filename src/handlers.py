@@ -291,7 +291,6 @@ class BoardHandler(Util):
                 self.redirect('/board/%s' % boardid)
                 
             elif action == 'delete':
-                board = self.getObjectFromDatastore('Board', boardid)
                 
                 for pinid in board.pins:
                     pin = self.getObjectFromDatastore('Pin', pinid)
@@ -350,6 +349,7 @@ class BoardsHandler(Util):
         
         if self.request.get("addpinlist") != '--':
             pinid = long(self.request.get("addpinlist"))
+            board.pins.append(pinid)
             pin = self.getObjectFromDatastore('Pin', pinid)
             board.save()
             pin.boards.append(long(board.key().id()))
