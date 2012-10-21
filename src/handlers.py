@@ -376,6 +376,7 @@ class BoardHandler(Util):
                 board.save()
                 
             elif action == 'delete':
+                board = self.getObjectFromDatastore('Board', boardid)
                 
                 for pinid in board.pins:
                     pin = self.getObjectFromDatastore('Pin', pinid)
@@ -434,17 +435,6 @@ class BoardsHandler(Util):
         else:
             board.private = False
         
-<<<<<<< HEAD
-=======
-        if self.request.get("addpinlist") != '--':
-            pinid = long(self.request.get("addpinlist"))
-            board.pins.append(pinid)
-            pin = self.getObjectFromDatastore('Pin', pinid)
-            board.save()
-            pin.boards.append(long(board.key().id()))
-            pin.save()
-        
->>>>>>> 24c0b2b4effc6b699f00d2809f3f56833b1534d7
         board.save()
         board.id = board.key().id()
         board.save()
