@@ -1,4 +1,4 @@
-console.log("script.js loaded")
+console.log("pinscript.js loaded")
 
 /* Mouse hover effect (caption) */
 

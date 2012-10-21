@@ -154,7 +154,7 @@ body {
     text-shadow: 1px 0px 1px #B2B4B3;
     font-size: 85%;
 }
-#pagename {
+.pagename {
 	text-shadow: -2.5px 2px 2px #4B4646;
 }
 

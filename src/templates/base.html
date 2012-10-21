@@ -4,7 +4,7 @@
 
 	<head>
 		<meta charset=UTF-8>
-		<title>HW7: Guilherme Salazar</title>
+		<title>HW8: Guilherme Salazar</title>
 		<link rel="stylesheet" type="text/css" href="/static/stylesheets/style.css" />
 	</head>
 
@@ -16,9 +16,7 @@
 	   <p class="hfp">
 	       <span class="lefttxt"><a href="/">Home</a></span> 
 	       <span class="righttxt">
-	           {% if not anonymous %}
 	           <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
-	           {% endif %}
 	           <a href="{{headurl}}">{{text}}</a>
 	       </span>
 	   </p>

@@ -7,8 +7,10 @@ Created on Aug 28, 2012
 
 from handlers import *
 
-urlmap = [('/', MainPage), 
+urlmap = [('/', MainPage),
+          ('/pin/(.[0-9]*)\.json', PinJsonHandler),
           ('/pin/(.[0-9]*)/?', PinHandler),
+          ('/board/(.[0-9]*)\.json', BoardJsonHandler),
           ('/board/(.[0-9]*)/?', BoardHandler),
           ('/board/?', BoardsHandler),
           ('/pin/?', PinsHandler), ('/login', LoginHandler),

@@ -8,13 +8,12 @@ Part of:
 <br />
 {% for board in boards %}
 <a href="/board/{{board.id}}">{{board.title}}</a> board
-<br /> <br />
+<br />
 {% endfor %}
 </div>
-
+<br />
 {% endif %}
 {% endblock %}
-
 
 {% block box %}
 {% endblock %}
@@ -23,7 +22,7 @@ Part of:
 
 {% if editable %}
     <script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="/static/js/script.js"></script>
+    <script type="text/javascript" src="/static/js/pinscript.js"></script>
 
 	<form>
 	   <input id="privacy" type="checkbox" name="privacy" value="private" {% if (items|first).private %} checked="checked" {% endif %} /> Private

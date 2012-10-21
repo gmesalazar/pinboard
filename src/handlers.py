@@ -8,6 +8,7 @@ Created on Oct 18, 2012
 import webapp2
 import os
 import jinja2
+import json
 
 from datamodels import *
 from google.appengine.api import users
@@ -44,9 +45,14 @@ class Util(webapp2.RedirectHandler):
         else:
             self.redirect('/login')
             
-    def getObjectFromDatastore(self, path, objId):
-        key = db.Key.from_path(path, objId)
-        return db.get(key)
+    def getObjectFromDatastore(self, path, objid):
+        key = db.Key.from_path(path, objid)
+        obj = db.get(key)
+        return obj
+    
+    def writeJSON(self, jsonStr):
+        self.response.out.headers['Content-Type'] = 'text/json'
+        self.response.out.write(jsonStr)
 
 class MainPage(Util):
     
@@ -54,33 +60,64 @@ class MainPage(Util):
         
         user = users.get_current_user()
         
-        if user:
-            anonymous = False
-            username = user.nickname()
-            headUrl = users.create_logout_url('/')
-            text = 'Logout'            
-        else:
-            anonymous = True
-            username = ''
-            headUrl = users.create_login_url('/')
-            text = 'Login'    
-           
+        if not user:
+            self.redirect('/login')
+            return
+
         self.template_values = {
-            'anonymous': anonymous,
-            'username': username,
-            'headurl': headUrl,
-            'text': text
-        }         
+            'username': user.nickname(),
+            'headurl': users.create_logout_url('/'),
+            'text': 'Logout'
+        }
         
         self.render('home.html')
+        
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Pin):
+            return {'imgUrl': obj.imgUrl, 'caption': obj.caption, 'date': obj.date,
+                    'owner': obj.owner, 'id': obj.id, 'private': obj.private,
+                    'boards': obj.boards}
+        elif isinstance(obj, Board):
+            return {'id': obj.id, 'title': obj.title, 'private': obj.private,
+                    'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner
+                    }
+        elif isinstance(obj, users.User):
+            return obj.nickname()
+        elif hasattr(obj, 'isoformat'):
+            return str(obj)
+        else:
+            return json.JSONEncoder.default(self, obj)
+
+class PinJsonHandler(Util):
+
+    def get(self, pinid):
+        
+        user = users.get_current_user()
+        
+        if not user:
+            self.redirect('/login')
+            return
             
+        pinid = long(pinid.split('.')[0])
+        pin = self.getObjectFromDatastore('Pin', pinid)
+        
+        if not pin:
+            self.exceptionRender('Pin not found; you were redirected to the main page.',
+                                 'home.html')
+            return
+
+        pinjson = json.dumps(pin, cls=MyEncoder, sort_keys=True, indent=4)
+        
+        self.writeJSON(pinjson)
+
 class PinHandler(Util):
     
     def get(self, pinid):
 
         pinid = long(pinid)
 
-        user = users.get_current_user()        
+        user = users.get_current_user()      
         
         if not user:
             self.redirect('/login')
@@ -91,6 +128,15 @@ class PinHandler(Util):
         if not pin:
             self.exceptionRender('Pin not found; you were redirected to the main page.',
                                  'home.html')
+            return
+        
+        fmt = self.request.get('fmt')
+        
+        if fmt == 'json':
+            
+            pinjson = json.dumps(pin, cls=MyEncoder, sort_keys=True, indent=4)
+            
+            self.writeJSON(pinjson)
             return
 
         if not pin.private or pin.owner == user:
@@ -125,7 +171,7 @@ class PinHandler(Util):
         user = users.get_current_user()
         
         key = db.Key.from_path('Pin', pinid)
-        pin = db.get(key)
+        pin = self.getObjectFromDatastore('Pin', pinid)
         
         if user == pin.owner:
         
@@ -156,7 +202,7 @@ class PinHandler(Util):
                 
                 pin.delete()
                 self.redirect('/pin')
-            
+
 class PinsHandler(Util):
     
     def get(self):
@@ -165,6 +211,18 @@ class PinsHandler(Util):
         
         if not user:
             self.redirect('login')
+            return
+            
+        fmt = self.request.get('fmt')
+        
+        if fmt == 'json':
+            user = users.get_current_user()
+    
+            pins = Pin.all().filter("owner =", user).fetch(1000)   
+            
+            pinsjson = json.dumps(pins, cls=MyEncoder, sort_keys=True, indent=4)
+        
+            self.writeJSON(pinsjson)
             return
         
         # Quick and dirty solution for the absence of an OR operator... :p
@@ -198,30 +256,60 @@ class PinsHandler(Util):
         pin.id = pin.key().id()
         pin.save()
         
-        self.redirect('/pin/%s' % pin.key().id())
-
-class BoardHandler(Util):
+        self.redirect('/pin/%s' % pin.key().id())    
     
-    def get(self, pinid):
+
+class BoardJsonHandler(Util):
+
+    def get(self, boardid):
         
-        boardid = long(pinid)
         user = users.get_current_user()
         
-        if user:
-            username = user.nickname()
-            headUrl = users.create_logout_url('/')
-            headText = 'Logout'
-        
-        else:
-            username = 'anonymous'
-            headUrl = users.create_login_url('/')
-            headText = 'Login'
-        
+        boardid = long(boardid.split('.')[0])
         board = self.getObjectFromDatastore('Board', boardid)
+        
+        if not user or (board.private and board.owner != user):
+            self.redirect('/login')
+            return
         
         if not board:
             self.exceptionRender('Board not found; you were redirected to the main page.',
                                  'home.html')
+            return
+
+        boardjson = json.dumps(board, cls=MyEncoder, sort_keys=True, indent=4)
+    
+        self.template_values = {
+            'jsonrepr': boardjson
+        }
+    
+        self.writeJSON(boardjson)
+
+class BoardHandler(Util):
+    
+    def get(self, boardid):
+        
+        boardid = long(boardid)
+        board = self.getObjectFromDatastore('Board', boardid)
+        
+        user = users.get_current_user()
+        
+        if not board:
+            self.exceptionRender('Board not found; you were redirected to the main page.',
+                                 'home.html')
+            return
+        
+        if not user or (board.private and board.owner != user):
+            self.redirect('/login')
+            return
+        
+        fmt = self.request.get('fmt')
+        
+        if fmt == 'json':
+            
+            boardjson = json.dumps(board, cls=MyEncoder, sort_keys=True, indent=4)
+        
+            self.writeJSON(boardjson)
             return
             
         if not board.private or board.owner == user:
@@ -237,16 +325,15 @@ class BoardHandler(Util):
                 'board': board,
                 'allpins': allpins,
                 'items': boardpins,
-                'username': username,
-                'headurl': headUrl,
-                'text': headText,
+                'username': user.nickname(),
+                'headurl': users.create_logout_url('/'),
+                'text': 'Logout',
                 'objectname': board.title,
                 'pagecat': 'Board',
-                'anonymous': not user,
                 'editable': user == board.owner
             }
         
-            self.render('board.html')                  
+            self.render('board.html')
 
     def post(self, boardid):
         
@@ -260,35 +347,33 @@ class BoardHandler(Util):
             action = self.request.get('action')
             
             if action == 'update':
-                newTitle = self.request.get('title')
-                newUrl = self.request.get('coverurl')
                 
-                board.title = newTitle
-                board.imgUrl = newUrl
+                newTitle = self.request.get('title')
+                if newTitle:
+                    board.title = newTitle
                 
                 checkbox = self.request.get('privacy')
                 
-                if checkbox == 'private':
+                if checkbox == 'true':
                     board.private = True
-                else:
-                    board.private = False      
+                elif checkbox == 'false':
+                    board.private = False
     
-                if self.request.get("addpinlist") != '--':
-                    pinid = long(self.request.get("addpinlist"))
+                if self.request.get("addpin"):
+                    pinid = long(self.request.get("addpin"))
                     board.pins.append(pinid)
                     pin = self.getObjectFromDatastore('Pin', pinid)
                     pin.boards.append(board.key().id())
                     pin.save()
                 
-                if self.request.get("delpinlist") != '--':
-                    pinid = long(self.request.get("delpinlist"))
+                if self.request.get("delpin"):
+                    pinid = long(self.request.get("delpin"))
                     board.pins.remove(pinid)
                     pin = self.getObjectFromDatastore('Pin', pinid)
                     pin.boards.remove(board.key().id())
                     pin.save()
                 
                 board.save()
-                self.redirect('/board/%s' % boardid)
                 
             elif action == 'delete':
                 board = self.getObjectFromDatastore('Board', boardid)
@@ -306,16 +391,19 @@ class BoardsHandler(Util):
     def get(self):
         user = users.get_current_user()
         
-        if user:
-            anonymous = False
-            username = user.nickname()
-            headUrl = users.create_logout_url('/')
-            headText = 'Logout'
-        else:
-            anonymous = True
-            username = ''
-            headUrl = users.create_login_url('/')
-            headText = 'Login'
+        if not user:
+            self.redirect('/login')
+            return
+        
+        fmt = self.request.get('fmt')
+        
+        if fmt == 'json':
+            boards = Board.all().filter("owner =", user).fetch(1000)   
+            
+            boardsjson = json.dumps(boards, cls=MyEncoder, sort_keys=True, indent=4)
+            
+            self.writeJSON(boardsjson)
+            return
         
         # Quick and dirty solution for the absence of an OR operator... :p
         q1 = Board.all().filter("private =", False).fetch(1000)
@@ -327,11 +415,10 @@ class BoardsHandler(Util):
         self.template_values = {
             'allpins': pins,
             'items': boards,
-            'username': username,
-            'headurl': headUrl,
-            'text': headText,
-            'anonymous': anonymous,
-            'pagecat': 'Boards' 
+            'username': user.nickname(),
+            'headurl': users.create_logout_url('/'),
+            'text': 'Logout',
+            'pagecat': 'Boards'
         }
     
         self.render('bthumbs.html')
@@ -347,13 +434,6 @@ class BoardsHandler(Util):
             board.private = True
         else:
             board.private = False
-        
-        if self.request.get("addpinlist") != '--':
-            pinid = long(self.request.get("addpinlist"))
-            pin = self.getObjectFromDatastore('Pin', pinid)
-            board.save()
-            pin.boards.append(long(board.key().id()))
-            pin.save()
         
         board.save()
         board.id = board.key().id()
@@ -375,7 +455,6 @@ class LoginHandler(Util):
         }
         
         self.render('login.html')
-
 
 '''
 @summary: 404 error handler
