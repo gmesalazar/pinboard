@@ -102,7 +102,7 @@ class PinJsonHandler(Util):
         pinid = long(pinid.split('.')[0])
         pin = self.getObjectFromDatastore('Pin', pinid)
         
-        if not pin:
+        if not pin or (pin.private and pin.owner != user):
             self.exceptionRender('Pin not found; you were redirected to the main page.',
                                  'home.html')
             return
@@ -125,44 +125,43 @@ class PinHandler(Util):
 
         pin = self.getObjectFromDatastore('Pin', pinid)
         
-        if not pin:
+        if not pin or (pin.private and pin.owner != user):
             self.exceptionRender('Pin not found; you were redirected to the main page.',
                                  'home.html')
             return
-        
-        fmt = self.request.get('fmt')
-        
-        if fmt == 'json':
             
+        fmt = self.request.get('fmt')
+    
+        if fmt == 'json':
+        
             pinjson = json.dumps(pin, cls=MyEncoder, sort_keys=True, indent=4)
             
             self.writeJSON(pinjson)
             return
-
-        if not pin.private or pin.owner == user:
+    
+        pins = set()
+        pins.add(pin)
         
-            pins = set()
-            pins.add(pin)
+        boards = set()
+        
+        for boardid in pin.boards:
+            board = self.getObjectFromDatastore('Board', boardid)
+            boards.add(board)
+        
+        self.template_values = {
+            'items': pins,
+            'boards': boards,
+            'username': user.nickname(),
+            'headurl': users.create_logout_url('/'),
+            'text': 'Logout',
+            'objectname': pin.caption,
+            'pagecat': 'Pin',
+            'anonymous': not user,
+            'editable': user == pin.owner
+        }
+        
+        self.render('pin.html')
             
-            boards = set()
-            
-            for boardid in pin.boards:
-                board = self.getObjectFromDatastore('Board', boardid)
-                boards.add(board)
-            
-            self.template_values = {
-                'items': pins,
-                'boards': boards,
-                'username': user.nickname(),
-                'headurl': users.create_logout_url('/'),
-                'text': 'Logout',
-                'objectname': pin.caption,
-                'pagecat': 'Pin',
-                'anonymous': not user,
-                'editable': user == pin.owner
-            }
-            
-            self.render('pin.html')
         
     def post(self, pinid):
         
@@ -215,24 +214,22 @@ class PinsHandler(Util):
             
         fmt = self.request.get('fmt')
         
+        # Quick and dirty solution for the absence of an OR operator... :p
+        q1 = Pin.all().filter("private =", False).fetch(1000)
+        q2 = Pin.all().filter("owner", user).filter("private =", True).fetch(1000)
+        pins = [] + q1 + q2
+        
         if fmt == 'json':
             user = users.get_current_user()
-    
-            pins = Pin.all().filter("owner =", user).fetch(1000)   
             
             pinsjson = json.dumps(pins, cls=MyEncoder, sort_keys=True, indent=4)
         
             self.writeJSON(pinsjson)
             return
         
-        # Quick and dirty solution for the absence of an OR operator... :p
-        self.q1 = Pin.all().filter("private =", False).fetch(1000)
-        self.q2 = Pin.all().filter("owner", user).filter("private =", True).fetch(1000)
-        self.pins = [] + self.q1 + self.q2
-        
         self.template_values = {
-            'items': self.pins,
-            'username': user.nickname() + ' ',
+            'items': pins,
+            'username': user.nickname(),
             'headurl': users.create_logout_url('/'),
             'text': 'Logout',
             'pagecat': 'Pins',
@@ -268,11 +265,11 @@ class BoardJsonHandler(Util):
         boardid = long(boardid.split('.')[0])
         board = self.getObjectFromDatastore('Board', boardid)
         
-        if not user or (board.private and board.owner != user):
+        if not user:
             self.redirect('/login')
             return
         
-        if not board:
+        if not board or (board.private and board.owner != user):
             self.exceptionRender('Board not found; you were redirected to the main page.',
                                  'home.html')
             return
@@ -294,15 +291,11 @@ class BoardHandler(Util):
         
         user = users.get_current_user()
         
-        if not board:
+        if not board or not user or (board.private and board.owner != user):
             self.exceptionRender('Board not found; you were redirected to the main page.',
                                  'home.html')
             return
-        
-        if not user or (board.private and board.owner != user):
-            self.redirect('/login')
-            return
-        
+
         fmt = self.request.get('fmt')
         
         if fmt == 'json':
@@ -311,29 +304,27 @@ class BoardHandler(Util):
         
             self.writeJSON(boardjson)
             return
-            
-        if not board.private or board.owner == user:
-            
-            allpins = Pin.all().filter("owner =", user)
-            
-            boardpins = set()
-            for pinid in board.pins:
-                pin = self.getObjectFromDatastore('Pin', pinid)
-                boardpins.add(pin)
-            
-            self.template_values = {
-                'board': board,
-                'allpins': allpins,
-                'items': boardpins,
-                'username': user.nickname(),
-                'headurl': users.create_logout_url('/'),
-                'text': 'Logout',
-                'objectname': board.title,
-                'pagecat': 'Board',
-                'editable': user == board.owner
-            }
         
-            self.render('board.html')
+        allpins = Pin.all().filter("owner =", user)
+        
+        boardpins = set()
+        for pinid in board.pins:
+            pin = self.getObjectFromDatastore('Pin', pinid)
+            boardpins.add(pin)
+        
+        self.template_values = {
+            'board': board,
+            'allpins': allpins,
+            'items': boardpins,
+            'username': user.nickname(),
+            'headurl': users.create_logout_url('/'),
+            'text': 'Logout',
+            'objectname': board.title,
+            'pagecat': 'Board',
+            'editable': user == board.owner
+        }
+    
+        self.render('board.html')
 
     def post(self, boardid):
         
@@ -393,16 +384,6 @@ class BoardsHandler(Util):
         
         if not user:
             self.redirect('/login')
-            return
-        
-        fmt = self.request.get('fmt')
-        
-        if fmt == 'json':
-            boards = Board.all().filter("owner =", user).fetch(1000)   
-            
-            boardsjson = json.dumps(boards, cls=MyEncoder, sort_keys=True, indent=4)
-            
-            self.writeJSON(boardsjson)
             return
         
         # Quick and dirty solution for the absence of an OR operator... :p

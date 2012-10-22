@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 
-<!-- Block that appears before "Enter new pin" -->
 {% block display %}
-{% if anonymous and items|count == 0 %}
-<div class="box">
-    <p>There are no public boards!</p>
-</div>
-
-{% elif items|count > 0 %}
 
 {% for item in items %}
 <div class="box">
@@ -22,19 +15,21 @@
 		  
 		</a>
 		
+		
 		<div class="centralized">
-            {{ item.title }}<br /> Owner: {{item.owner }}
+            {% if (item.owner)|string != username %}
+            Owner: {{ item.owner }} <br /> 
+            {% endif %}
+            {{ item.title }}
         </div>
 	</p>
 </div>
 <br />
 {% endfor %}
-{% endif %}
 
 {% endblock %}
 
 {% block box %}
-{% if not anonymous %}
 <div class="box">
 
 	<p>New board</p>
@@ -60,7 +55,6 @@
 	</form>
 
 </div>
-{% endif %}
 {% endblock %}
 
 {% block addpins %}

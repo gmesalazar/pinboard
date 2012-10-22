@@ -6,11 +6,11 @@
 <div class="box">
 	<p>
 	   <a class="thumbs" href="{{'/pin/' ~ item.id }}"><img width="200" align="top" src="{{item.imgUrl}}"></a>
-	   
-	   {% block owner %}
-	   {% endblock %}
-	   
+
 	   <div class="centralized">
+	       {% if (item.owner)|string != username|string %}
+	       <div>Owner: {{item.owner}}</div>
+	       {% endif %}
 	       <div>Created on {{item.date}}</div>
 	       <div id="caption">{{item.caption}}</div>
 	   </div>
@@ -25,7 +25,6 @@
 </div>
 
 <br />
-
 {% endfor %}
 
 {% endblock %}

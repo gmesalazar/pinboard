@@ -39,12 +39,3 @@ Part of:
 {% endif %}
 
 {% endblock %}
-
-{% block owner %}
-{% if not editable %}
-    <div class="centralized">
-        <div>Owner: {{(items|first).owner}}</div>
-        
-    </div>
-{% endif %}
-{% endblock %}
