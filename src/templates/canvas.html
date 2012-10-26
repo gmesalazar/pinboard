@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if editable %}
+<script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="/static/js/canvas.js"></script>
+{% endif %}
+
+<canvas id="bcanvas" width="854" height="480">
+</canvas>
+{% endblock %}

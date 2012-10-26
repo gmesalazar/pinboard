@@ -4,7 +4,7 @@
 
 	<head>
 		<meta charset=UTF-8>
-		<title>HW8: Guilherme Salazar</title>
+		<title>HW9: Guilherme Salazar</title>
 		<link rel="stylesheet" type="text/css" href="/static/stylesheets/style.css" />
 	</head>
 
@@ -14,28 +14,32 @@
        <div id="header">
 
 	   <p class="hfp">
-	       <span class="lefttxt"><a href="/">Home</a></span> 
+	       <span class="lefttxt"><a class="hlink" href="/">Home</a></span> 
 	       <span class="righttxt">
-	           <a href="/board">My Boards</a> - <a href="/pin">My Pins</a> - <b>{{username}}</b> -
-	           <a href="{{headurl}}">{{text}}</a>
+	           <a class="hlink" href="/board">My Boards</a> - <a class="hlink" href="/pin">My Pins</a> - <b>{{username}}</b> -
+	           <a class="hlink" href="{{headurl}}">{{text}}</a>
 	       </span>
 	   </p>
 
         </div>
         {% endblock %}
 	
-		{% block content %}
+		{% block body %}
 		<div id="content">
 	
 			<br />
 	
-			<h1>
+			<div id="h1">
+			     <p>
 			     Pinboard {% if objectname %} &ndash; <span id="pagename">{{objectname}}</span> {{pagecat}}
 			     {% elif pagecat %} &ndash; {{pagecat}} {% endif %}
-			</h1>
+			     {% block canvaslink %}{% endblock %}
+			     </p>
+			</div>
 	   
 	        <br />
 	
+	        {% block content %}
 			{% if exception %}
 	
 			{% block messagebox %}
@@ -56,6 +60,7 @@
 	
 			<!-- Super block in which a new pin is entered -->
 			{% block box %}
+			{% endblock%}
 			{% endblock %}
 	
 		</div>

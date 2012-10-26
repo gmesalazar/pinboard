@@ -12,6 +12,7 @@ urlmap = [('/', MainPage),
           ('/pin/(.[0-9]*)/?', PinHandler),
           ('/board/(.[0-9]*)\.json', BoardJsonHandler),
           ('/board/(.[0-9]*)/?', BoardHandler),
+          ('/canvas/(.[0-9]*)/?', CanvasHandler),
           ('/board/?', BoardsHandler),
           ('/pin/?', PinsHandler), ('/login', LoginHandler),
           ('/.*', NotFoundPageHandler)]

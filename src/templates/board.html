@@ -1,5 +1,10 @@
 {% extends "bthumbs.html" %}
 
+{% block canvaslink %}
+<span class="rightalign"><a class="blink" href="{{'/canvas/' ~ board.id}}">Canvas</a></span>
+{% endblock %}
+
+
 {% block box %} 
 
 {% block display%}

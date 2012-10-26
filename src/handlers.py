@@ -77,7 +77,7 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, Pin):
             return {'imgUrl': obj.imgUrl, 'caption': obj.caption, 'date': obj.date,
                     'owner': obj.owner, 'id': obj.id, 'private': obj.private,
-                    'boards': obj.boards}
+                    'boards': obj.boards, 'xCoord': obj.xCoord, 'yCoord': obj.yCoord}
         elif isinstance(obj, Board):
             return {'id': obj.id, 'title': obj.title, 'private': obj.private,
                     'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner
@@ -146,7 +146,8 @@ class PinHandler(Util):
         
         for boardid in pin.boards:
             board = self.getObjectFromDatastore('Board', boardid)
-            boards.add(board)
+            if board.owner == user or not board.private:
+                boards.add(board)
         
         self.template_values = {
             'items': pins,
@@ -187,6 +188,14 @@ class PinHandler(Util):
                     pin.private = True
                 else:
                     pin.private = False
+                    
+                xCoord = long(self.request.get('xCoord'))
+                if xCoord:
+                    pin.xCoord = xCoord
+                
+                yCoord = long(self.request.get('yCoord'))
+                if yCoord:
+                    pin.yCoord = yCoord
                 
                 pin.save()
                 
@@ -240,7 +249,8 @@ class PinsHandler(Util):
         
     def post(self):
         
-        pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'), boards=[])
+        pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'), boards=[],
+                  xCoord = -1, yCoord = -1)
         
         checkbox = self.request.get('privacy')
         
@@ -421,7 +431,51 @@ class BoardsHandler(Util):
         board.save()
         
         self.redirect('/board/%s' % board.key().id())
-   
+
+class CanvasHandler(Util):
+    
+    def get(self, boardid):
+        
+        boardid = long(boardid)
+        board = self.getObjectFromDatastore('Board', boardid)
+        
+        user = users.get_current_user()
+        
+        if not board or not user or (board.private and board.owner != user):
+            self.exceptionRender('Board not found; you were redirected to the main page.',
+                                 'home.html')
+            return
+
+        fmt = self.request.get('fmt')
+        
+        if fmt == 'json':
+            
+            boardjson = json.dumps(board, cls=MyEncoder, sort_keys=True, indent=4)
+        
+            self.writeJSON(boardjson)
+            return
+        
+        allpins = Pin.all().filter("owner =", user)
+        
+        boardpins = set()
+        for pinid in board.pins:
+            pin = self.getObjectFromDatastore('Pin', pinid)
+            boardpins.add(pin)
+        
+        self.template_values = {
+            'board': board,
+            'allpins': allpins,
+            'items': boardpins,
+            'username': user.nickname(),
+            'headurl': users.create_logout_url('/'),
+            'text': 'Logout',
+            'objectname': board.title,
+            'pagecat': 'Board',
+            'editable': user == board.owner
+        }
+    
+        self.render('canvas.html')
+
 '''
 @summary: Class containing authentication handlers
 '''
