@@ -19,8 +19,8 @@ class Pin(db.Model):
     id = db.IntegerProperty()
     private = db.BooleanProperty()
     boards = db.ListProperty(long)
-    xCoord = db.IntegerProperty()
-    yCoord = db.IntegerProperty()
+    xCoords = db.StringProperty()
+    yCoords = db.StringProperty()
 
 '''
 @summary: data model for a board

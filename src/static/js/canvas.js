@@ -5,6 +5,8 @@ var boardpinids = null;
 var boardpins = null;
 var allpins = null;
 
+var imgs = null;
+
 var lastlyMovedPin = null;
 
 function setAllPins(data) {
@@ -33,38 +35,58 @@ function addImages() {
 
 	var bcanvas = document.getElementById('bcanvas');
 	var ctx = bcanvas.getContext('2d');
+	
+	imgs = new Array();
 
 	for (var i = 0; i < boardpins.length; i++) {
 
 		var img = new Image();
 		img.src = boardpins[i].imgUrl;
-
+		
+		img.id = boardpins[i].id;
+		img.xCoord = boardpins[i].xCoords[board.id];
+		img.yCoord = boardpins[i].yCoords[board.id];
+		
+		imgs.push(img);
+		
 		img.onload = function(pin, img, i) {
 			return function() {
-				if (pin.xCoord == -1 && pin.yCoord == -1) {
+				if (img.xCoord == undefined || img.yCoord == undefined) {
 					
 					var xCoord = (i % 4) * 200 + (i % 4 + 1) * 11;
 					var yCoord = Math.floor(i / 4) * 200 + (Math.floor(i / 4) + 1) * 25;
 					
+					img.xCoord = xCoord;
+					img.yCoord = yCoord;
+					
 					ctx.drawImage(img, xCoord, yCoord, 200, 200);
 					
-					pin.xCoord = xCoord;
-					pin.yCoord = yCoord;
-					
 				} else {
-					ctx.drawImage(img, pin.xCoord, pin.yCoord, 200, 200);
+					ctx.drawImage(img, img.xCoord, img.yCoord, 200, 200);
 				}
 			}
 		}(boardpins[i], img, i);
 	}
 }
 
+function updateImgs() {
+	
+	var bcanvas = document.getElementById('bcanvas');
+	var ctx = bcanvas.getContext('2d');
+	
+	for (i = 0; i < imgs.length; i++) {
+		if (imgs[i] != lastlyMovedPin) {
+			ctx.drawImage(imgs[i], imgs[i].xCoord, imgs[i].yCoord, 200, 200);
+		}
+	}
+}
+
 function pointerIsInsideObject(mouseX, mouseY) {
 	
-	for (var i = 0; i < boardpins.length; i++) {
-		if ((mouseX >= boardpins[i].xCoord && mouseX <= boardpins[i].xCoord + 200)
-				&& (mouseY >= boardpins[i].yCoord && mouseY <= boardpins[i].yCoord + 200)) {
-			return boardpins[i];
+	for (var i = 0; i < imgs.length; i++) {
+		if ((mouseX >= imgs[i].xCoord && mouseX <= imgs[i].xCoord + 200)
+				&& (mouseY >= imgs[i].yCoord && mouseY <= imgs[i].yCoord + 200)) {
+			return imgs[i];
 		}
 	}
 	
@@ -95,11 +117,13 @@ $(document).ready(function() {
 	});
 
 	$('#bcanvas').mouseup(function(event) {
+		
 		$('#bcanvas').unbind('mousemove');
 		
 		$.ajax('/pin/' + lastlyMovedPin.id, {
 			type : 'POST',
 			data : {
+				boardId : board.id,
 				xCoord : lastlyMovedPin.xCoord,
 				yCoord : lastlyMovedPin.yCoord,
 				action : 'update',
@@ -112,28 +136,26 @@ $(document).ready(function() {
 		var bcanvas = document.getElementById('bcanvas');
 		var ctx = bcanvas.getContext('2d');
 		
-		ctx.globalCompositeOperation = 'destination-over';
-		
 		var mouseX = event.pageX - this.offsetLeft;
 		var mouseY = event.pageY - this.offsetTop;
 		
-		var pin = pointerIsInsideObject(mouseX, mouseY);
-		console.log(pin);
-		if (pin != null) {
+		var img = pointerIsInsideObject(mouseX, mouseY);
+		
+		if (img != null) {
 			 $('#bcanvas').mousemove(function(e) {
 				 mouseX = e.pageX - this.offsetLeft;
 				 mouseY = e.pageY - this.offsetTop;
-				 var img = new Image();
-				 img.src = pin.imgUrl;
-				 img.onload = function() {
-					 ctx.clearRect(pin.xCoord, pin.yCoord, 200, 200);
-					 pin.xCoord = mouseX;
-					 pin.yCoord = mouseY;
-					 ctx.drawImage(img, mouseX, mouseY, 200, 200);
-					 addImages();
-				 }
+				 
+				 ctx.clearRect(img.xCoord, img.yCoord, 200, 200);
+				 img.xCoord = mouseX;
+				 img.yCoord = mouseY;
+				 
+				 updateImgs();
+				 
+				 ctx.drawImage(img, mouseX, mouseY, 200, 200);
+				 
+				 lastlyMovedPin = img;
 			 });
-			 lastlyMovedPin = pin;
 		}
 	});
 	

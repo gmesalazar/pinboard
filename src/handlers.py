@@ -9,6 +9,7 @@ import webapp2
 import os
 import jinja2
 import json
+import json
 
 from datamodels import *
 from google.appengine.api import users
@@ -77,7 +78,8 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, Pin):
             return {'imgUrl': obj.imgUrl, 'caption': obj.caption, 'date': obj.date,
                     'owner': obj.owner, 'id': obj.id, 'private': obj.private,
-                    'boards': obj.boards, 'xCoord': obj.xCoord, 'yCoord': obj.yCoord}
+                    'boards': obj.boards, 'xCoords' : json.loads(obj.xCoords), 
+                    'yCoords' : json.loads(obj.yCoords)}
         elif isinstance(obj, Board):
             return {'id': obj.id, 'title': obj.title, 'private': obj.private,
                     'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner
@@ -189,13 +191,21 @@ class PinHandler(Util):
                 else:
                     pin.private = False
                     
+                boardId = self.request.get('boardId')
+                
                 xCoord = long(self.request.get('xCoord'))
                 if xCoord:
-                    pin.xCoord = xCoord
+                    xDict = json.loads(pin.xCoords)
+                    xDict[boardId] = xCoord
+                    pin.xCoords = json.dumps(xDict)
+                    
                 
                 yCoord = long(self.request.get('yCoord'))
+                
                 if yCoord:
-                    pin.yCoord = yCoord
+                    yDict = json.loads(pin.yCoords)
+                    yDict[boardId] = yCoord
+                    pin.yCoords = json.dumps(yDict)
                 
                 pin.save()
                 
@@ -250,7 +260,7 @@ class PinsHandler(Util):
     def post(self):
         
         pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'), boards=[],
-                  xCoord = -1, yCoord = -1)
+                  xCoords = '{}', yCoords = '{}')
         
         checkbox = self.request.get('privacy')
         
