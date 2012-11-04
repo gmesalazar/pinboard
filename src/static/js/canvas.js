@@ -4,9 +4,7 @@ var board = null;
 var boardpinids = null;
 var boardpins = null;
 var allpins = null;
-
 var imgs = null;
-
 var lastlyMovedPin = null;
 
 function setAllPins(data) {
@@ -44,8 +42,8 @@ function addImages() {
 		img.src = boardpins[i].imgUrl;
 		
 		img.id = boardpins[i].id;
-		img.xCoord = boardpins[i].xCoords[board.id];
-		img.yCoord = boardpins[i].yCoords[board.id];
+		img.xCoord = board.xCoords[boardpins[i].id];
+		img.yCoord = board.yCoords[boardpins[i].id];
 		
 		imgs.push(img);
 		
@@ -53,8 +51,8 @@ function addImages() {
 			return function() {
 				if (img.xCoord == undefined || img.yCoord == undefined) {
 					
-					var xCoord = (i % 4) * 200 + (i % 4 + 1) * 11;
-					var yCoord = Math.floor(i / 4) * 200 + (Math.floor(i / 4) + 1) * 25;
+					var xCoord = (i % 4) * 200 + (i % 4 + 1) * 10.5;
+					var yCoord = Math.floor(i / 4) * 200 + (Math.floor(i / 4) + 1) * 26.5;
 					
 					img.xCoord = xCoord;
 					img.yCoord = yCoord;
@@ -120,10 +118,10 @@ $(document).ready(function() {
 		
 		$('#bcanvas').unbind('mousemove');
 		
-		$.ajax('/pin/' + lastlyMovedPin.id, {
+		$.ajax('/board/' + board.id, {
 			type : 'POST',
 			data : {
-				boardId : board.id,
+				pinId : lastlyMovedPin.id,
 				xCoord : lastlyMovedPin.xCoord,
 				yCoord : lastlyMovedPin.yCoord,
 				action : 'update',

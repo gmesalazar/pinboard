@@ -9,7 +9,6 @@ import webapp2
 import os
 import jinja2
 import json
-import json
 
 from datamodels import *
 from google.appengine.api import users
@@ -78,11 +77,11 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, Pin):
             return {'imgUrl': obj.imgUrl, 'caption': obj.caption, 'date': obj.date,
                     'owner': obj.owner, 'id': obj.id, 'private': obj.private,
-                    'boards': obj.boards, 'xCoords' : json.loads(obj.xCoords), 
-                    'yCoords' : json.loads(obj.yCoords)}
+                    'boards': obj.boards}
         elif isinstance(obj, Board):
             return {'id': obj.id, 'title': obj.title, 'private': obj.private,
-                    'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner
+                    'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner,
+                    'xCoords' : json.loads(obj.xCoords), 'yCoords' : json.loads(obj.yCoords)
                     }
         elif isinstance(obj, users.User):
             return obj.nickname()
@@ -190,22 +189,6 @@ class PinHandler(Util):
                     pin.private = True
                 else:
                     pin.private = False
-                    
-                boardId = self.request.get('boardId')
-                
-                xCoord = long(self.request.get('xCoord'))
-                if xCoord:
-                    xDict = json.loads(pin.xCoords)
-                    xDict[boardId] = xCoord
-                    pin.xCoords = json.dumps(xDict)
-                    
-                
-                yCoord = long(self.request.get('yCoord'))
-                
-                if yCoord:
-                    yDict = json.loads(pin.yCoords)
-                    yDict[boardId] = yCoord
-                    pin.yCoords = json.dumps(yDict)
                 
                 pin.save()
                 
@@ -259,8 +242,7 @@ class PinsHandler(Util):
         
     def post(self):
         
-        pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'), boards=[],
-                  xCoords = '{}', yCoords = '{}')
+        pin = Pin(imgUrl=self.request.get('url'), caption=self.request.get('caption'), boards=[])
         
         checkbox = self.request.get('privacy')
         
@@ -384,6 +366,30 @@ class BoardHandler(Util):
                     pin.boards.remove(board.key().id())
                     pin.save()
                 
+                
+                ###
+                
+                # an interesting way of simulating a dictionary in the appengine datastore...
+                
+                pinId = self.request.get('pinId')
+                
+                xCoord = self.request.get('xCoord')
+                if xCoord:
+                    xCoord = long(xCoord)
+                    xDict = json.loads(board.xCoords)
+                    xDict[pinId] = xCoord
+                    board.xCoords = json.dumps(xDict)
+                    
+                yCoord = self.request.get('yCoord')
+                if yCoord:
+                    yCoord = long(yCoord)
+                    yDict = json.loads(board.yCoords)
+                    yDict[pinId] = yCoord
+                    board.yCoords = json.dumps(yDict)
+                    
+                ###
+                
+                
                 board.save()
                 
             elif action == 'delete':
@@ -427,7 +433,8 @@ class BoardsHandler(Util):
 
     def post(self):
 
-        board = Board(title=self.request.get('title'), imgUrl=self.request.get('coverurl'), pins=[])
+        board = Board(title=self.request.get('title'), imgUrl=self.request.get('coverurl'), pins=[],
+                      xCoords = '{}', yCoords = '{}')
         
         checkbox = self.request.get('privacy')
         

@@ -19,8 +19,6 @@ class Pin(db.Model):
     id = db.IntegerProperty()
     private = db.BooleanProperty()
     boards = db.ListProperty(long)
-    xCoords = db.StringProperty()
-    yCoords = db.StringProperty()
 
 '''
 @summary: data model for a board
@@ -33,3 +31,5 @@ class Board(db.Model):
     pins = db.ListProperty(long)
     imgUrl = db.StringProperty()
     owner = db.UserProperty(auto_current_user=True)
+    xCoords = db.StringProperty()
+    yCoords = db.StringProperty()
