@@ -13,6 +13,10 @@ from google.appengine.ext import db
 class Pin(db.Model):
     
     imgUrl = db.StringProperty()
+    image = db.BlobProperty()
+    width = db.IntegerProperty()
+    height = db.IntegerProperty()
+    format = db.IntegerProperty()
     caption = db.StringProperty()
     date = db.DateProperty(auto_now=True)
     owner = db.UserProperty(auto_current_user=True)

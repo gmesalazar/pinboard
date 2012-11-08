@@ -1,5 +1,9 @@
 {% extends "pthumbs.html" %}
 
+{% block image %}
+    <a class="thumbs" href="{{pinUrl}}"><img width="200" align="top" src="{{item.imgUrl}}"></a>
+{% endblock %}
+
 {% block partof %}
 {% if boards|count > 0 %}
 

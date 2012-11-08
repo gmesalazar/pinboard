@@ -12,6 +12,8 @@ import json
 
 from datamodels import *
 from google.appengine.api import users
+from google.appengine.api import urlfetch
+from google.appengine.api import images
 
 jinja_environment = jinja2.Environment(
                         loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'))
@@ -53,6 +55,19 @@ class Util(webapp2.RedirectHandler):
     def writeJSON(self, jsonStr):
         self.response.out.headers['Content-Type'] = 'text/json'
         self.response.out.write(jsonStr)
+        
+    def serveImage(self, imgFormat, imageBlob):
+        if imgFormat == images.JPEG:
+            self.response.out.headers['Content-Type'] = 'image/jpeg'
+        elif imgFormat == images.PNG:
+            self.response.out.headers['Content-Type'] = 'image/jpeg'
+        elif imgFormat == images.GIF:
+            self.response.out.headers['Content-Type'] = 'image/gif'
+        elif imgFormat == images.BMP:
+            self.response.out.headers['Content-Type'] = 'image/bmp'
+        elif imgFormat == images.BMP:
+            self.response.out.headers['Content-Type'] = 'image/ico'
+        self.response.out.write(imageBlob)
 
 class MainPage(Util):
     
@@ -75,7 +90,8 @@ class MainPage(Util):
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Pin):
-            return {'imgUrl': obj.imgUrl, 'caption': obj.caption, 'date': obj.date,
+            return {'imgUrl': obj.imgUrl, 'width': obj.width, 'height': obj.heigth,
+                    'caption': obj.caption, 'date': obj.date,
                     'owner': obj.owner, 'id': obj.id, 'private': obj.private,
                     'boards': obj.boards}
         elif isinstance(obj, Board):
@@ -153,6 +169,7 @@ class PinHandler(Util):
         self.template_values = {
             'items': pins,
             'boards': boards,
+            'pinUrl': '/pin/' + str(pin.id) + '.img',
             'username': user.nickname(),
             'headurl': users.create_logout_url('/'),
             'text': 'Logout',
@@ -251,13 +268,45 @@ class PinsHandler(Util):
         else:
             pin.private = False
         
+        result = urlfetch.fetch(pin.imgUrl)
+        if result.status_code == 200:
+            pin.image = db.Blob(result.content)
+            imgObj = images.Image(image_data=pin.image)
+            pin.width = imgObj.width
+            pin.height = imgObj.height
+            pin.format = imgObj.format
+        else:
+            self.exceptionRender('Could not retrieve the image, check the URL!', 'pthumbs.html')
+            return
+        
         pin.save()
         pin.id = pin.key().id()
         pin.save()
         
         self.redirect('/pin/%s' % pin.key().id())    
     
+    
+class ImageHandler(Util):
 
+    def get(self, pinid):
+        
+        pinid = long(pinid.split('.')[0])
+
+        user = users.get_current_user()      
+        
+        if not user:
+            self.redirect('/login')
+            return
+
+        pin = self.getObjectFromDatastore('Pin', pinid)
+        
+        if not pin or (pin.private and pin.owner != user):
+            self.exceptionRender('Pin not found; you were redirected to the main page.',
+                                 'home.html')
+            return
+        
+        self.serveImage(pin.format, pin.image)
+        
 class BoardJsonHandler(Util):
 
     def get(self, boardid):

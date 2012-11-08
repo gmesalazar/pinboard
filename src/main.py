@@ -8,6 +8,7 @@ Created on Aug 28, 2012
 from handlers import *
 
 urlmap = [('/', MainPage),
+          ('/pin/(.[0-9]*)\.img', ImageHandler),
           ('/pin/(.[0-9]*)\.json', PinJsonHandler),
           ('/pin/(.[0-9]*)/?', PinHandler),
           ('/board/(.[0-9]*)\.json', BoardJsonHandler),
