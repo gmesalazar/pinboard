@@ -35,5 +35,7 @@ class Board(db.Model):
     pins = db.ListProperty(long)
     imgUrl = db.StringProperty()
     owner = db.UserProperty(auto_current_user=True)
+    widths = db.StringProperty()
+    heights = db.StringProperty()
     xCoords = db.StringProperty()
     yCoords = db.StringProperty()

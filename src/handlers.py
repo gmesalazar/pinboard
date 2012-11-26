@@ -90,14 +90,15 @@ class MainPage(Util):
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Pin):
-            return {'imgUrl': obj.imgUrl, 'width': obj.width, 'height': obj.heigth,
+            return {'imgUrl': obj.imgUrl, 'width': obj.width, 'height': obj.height,
                     'caption': obj.caption, 'date': obj.date,
                     'owner': obj.owner, 'id': obj.id, 'private': obj.private,
                     'boards': obj.boards}
         elif isinstance(obj, Board):
             return {'id': obj.id, 'title': obj.title, 'private': obj.private,
                     'pins': obj.pins, 'imgUrl': obj.imgUrl, 'owner': obj.owner,
-                    'xCoords' : json.loads(obj.xCoords), 'yCoords' : json.loads(obj.yCoords)
+                    'xCoords' : json.loads(obj.xCoords), 'yCoords' : json.loads(obj.yCoords),
+                    'widths' : json.loads(obj.widths), 'heights' : json.loads(obj.heights)
                     }
         elif isinstance(obj, users.User):
             return obj.nickname()
@@ -436,6 +437,20 @@ class BoardHandler(Util):
                     yDict[pinId] = yCoord
                     board.yCoords = json.dumps(yDict)
                     
+                width = self.request.get('width')
+                if width:
+                    width = long(width)
+                    widths = json.loads(board.widths)
+                    widths[pinId] = width
+                    board.widths = json.dumps(widths)
+                    
+                height = self.request.get('height')
+                if height:
+                    height = long(height)
+                    heights = json.loads(board.heights)
+                    heights[pinId] = height
+                    board.heights = json.dumps(heights)
+                    
                 ###
                 
                 
@@ -483,7 +498,7 @@ class BoardsHandler(Util):
     def post(self):
 
         board = Board(title=self.request.get('title'), imgUrl=self.request.get('coverurl'), pins=[],
-                      xCoords = '{}', yCoords = '{}')
+                      xCoords = '{}', yCoords = '{}', widths = '{}', heights = '{}')
         
         checkbox = self.request.get('privacy')
         
