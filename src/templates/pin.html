@@ -1,5 +1,11 @@
 {% extends "pthumbs.html" %}
 
+{% block drivelink %}
+   <span class="rightalign"><a class="blink" href="/pin/{{(items|first).id}}?export=drive">
+       <img border=1 width="32" height="32" title="Export Pins to Google Drive" src="/static/images/drive.png"></a>
+   </span>
+{% endblock %}
+
 {% block image %}
     <a class="thumbs" href="{{pinUrl}}"><img width="200" align="top" src="{{item.imgUrl}}"></a>
 {% endblock %}

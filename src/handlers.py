@@ -6,17 +6,28 @@ Created on Oct 18, 2012
 '''
 
 import webapp2
-import os
 import jinja2
 import json
+import os
 
-from datamodels import *
+from google.appengine.ext import db
 from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.api import images
 
+from datamodels import Board, Pin
+from googledrive import *
+from mediainmemoryupload import MediaInMemoryUpload
+
 jinja_environment = jinja2.Environment(
                         loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'))
+
+# The use of this global variable is a quick-and-dirty way to keep track of the pin the user 
+# wants to export. This is necessary because it isn't possible to have dynamic "redirect urls"
+# in OAuth, and each pin has a different URL. 
+# In the case of exporting all the pins, such a variable isn't necessary because we have 
+# a fixed redirect url registered, that goes to /pin?act=export
+exportOnlyOnePin = None
 
 '''
 @summary: Class containing misc methods
@@ -25,8 +36,8 @@ class Util(webapp2.RedirectHandler):
 
     def render(self, tempName):
         template = jinja_environment.get_template(tempName)
-        self.response.out.write(template.render(self.template_values))
-        
+        self.response.out.write(template.render(self.template_values))    
+    
     def exceptionRender(self, message, tempName):
         
         user = users.get_current_user()
@@ -55,18 +66,21 @@ class Util(webapp2.RedirectHandler):
     def writeJSON(self, jsonStr):
         self.response.out.headers['Content-Type'] = 'text/json'
         self.response.out.write(jsonStr)
-        
-    def serveImage(self, imgFormat, imageBlob):
+    
+    def formatToString(self, imgFormat):
         if imgFormat == images.JPEG:
-            self.response.out.headers['Content-Type'] = 'image/jpeg'
+            return 'image/jpeg'
         elif imgFormat == images.PNG:
-            self.response.out.headers['Content-Type'] = 'image/jpeg'
+            return 'image/jpeg'
         elif imgFormat == images.GIF:
-            self.response.out.headers['Content-Type'] = 'image/gif'
+            return 'image/gif'
         elif imgFormat == images.BMP:
-            self.response.out.headers['Content-Type'] = 'image/bmp'
+            return 'image/bmp'
         elif imgFormat == images.BMP:
-            self.response.out.headers['Content-Type'] = 'image/ico'
+            return 'image/ico'
+    
+    def serveImage(self, imgFormat, imageBlob):
+        self.response.out.headers['Content-Type'] = self.formatToString(imgFormat)
         self.response.out.write(imageBlob)
 
 class MainPage(Util):
@@ -180,6 +194,18 @@ class PinHandler(Util):
             'editable': user == pin.owner
         }
         
+        export = self.request.get('export')
+        if export == 'drive':
+            
+            # if we entered this zone, it's because we want to export only one pin, so
+            # we need to set the guard variable exportOnlyOnePin
+            global exportOnlyOnePin 
+            exportOnlyOnePin = pinid
+            
+            creds = getCodeCredentials(self)
+            if not creds:
+                return redirectAuth(self)
+        
         self.render('pin.html')
             
         
@@ -237,7 +263,7 @@ class PinsHandler(Util):
         # Quick and dirty solution for the absence of an OR operator... :p
         q1 = Pin.all().filter("private =", False).fetch(1000)
         q2 = Pin.all().filter("owner", user).filter("private =", True).fetch(1000)
-        pins = [] + q1 + q2
+        pins = q1 + q2
         
         if fmt == 'json':
             user = users.get_current_user()
@@ -255,7 +281,54 @@ class PinsHandler(Util):
             'pagecat': 'Pins',
             'editable': True
         }
-    
+        
+        export = self.request.get('export')
+        if export == 'drive':
+
+            creds = getCodeCredentials(self)
+            if not creds:
+                return redirectAuth(self)
+
+            drive = createService('drive', 'v2', creds)
+
+            if exportOnlyOnePin:
+                
+                pin = self.getObjectFromDatastore('Pin', exportOnlyOnePin)
+                media_body = MediaInMemoryUpload(pin.image, self.formatToString(pin.format), resumable=True)
+                
+                file_body = {
+                        'title': pin.caption,
+                        'mimeType': self.formatToString(pin.format)
+                }
+                
+                drive.files().insert(body=file_body, media_body=media_body).execute()
+                
+                self.template_values['message'] = True
+                self.template_values['message_header'] = ''
+                self.template_values['message_body'] = '''Your pins were successfully exported 
+                                                        to your Google Drive account!'''
+                
+                global exportOnlyOnePin
+                exportOnlyOnePin = None
+            
+            else:
+            
+                for pin in pins:
+                    
+                    media_body = MediaInMemoryUpload(pin.image, self.formatToString(pin.format), resumable=True)
+                
+                    file_body = {
+                            'title': pin.caption,
+                            'mimeType': self.formatToString(pin.format)
+                    }
+                    
+                    drive.files().insert(body=file_body, media_body=media_body).execute()
+                    
+                    self.template_values['message'] = True
+                    self.template_values['message_header'] = ''
+                    self.template_values['message_body'] = '''Your pins were successfully exported 
+                                                            to your Google Drive account!'''
+                
         self.render('pthumbs.html')
         
     def post(self):
@@ -556,6 +629,7 @@ class CanvasHandler(Util):
         }
     
         self.render('canvas.html')
+        
 
 '''
 @summary: Class containing authentication handlers

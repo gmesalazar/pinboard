@@ -33,16 +33,29 @@
 			     <p>
 			     Pinboard {% if objectname %} &ndash; <span id="pagename">{{objectname}}</span> {{pagecat}}
 			     {% elif pagecat %} &ndash; {{pagecat}} {% endif %}
-			     {% block canvaslink %}{% endblock %}
+			     {% block canvaslink %}{% endblock %} {% block drivelink %}{% endblock %}
 			     </p>
 			</div>
 	   
 	        <br />
 	
 	        {% block content %}
+	        {% if message %}
+    
+            {% block messagebox %}
+            <div class="exbox">
+                <img id="mimage" width=48 height=48 alt="Info Image" src="/static/images/okay.png"/>
+                <p id="mheader">{{ message_header }}</p>
+                <p>{{ message_body }}</p>
+            </div>
+            {% endblock %}
+    
+            <br /> <br />
+    
+            {% endif %}
 			{% if exception %}
 	
-			{% block messagebox %}
+			{% block exceptionbox %}
 			<div class="exbox">
 				<img id="mimage" alt="Warning Image" src="/static/images/warning.png"/>
 				<p id="mheader">{{ message_header }}</p>

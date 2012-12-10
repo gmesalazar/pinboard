@@ -10,6 +10,7 @@ from google.appengine.ext import db
 '''
 @summary: data model for a pin
 '''
+
 class Pin(db.Model):
     
     imgUrl = db.StringProperty()

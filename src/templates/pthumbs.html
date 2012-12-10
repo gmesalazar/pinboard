@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block drivelink %}
+    {% if (items)|length > 0 %}
+        <span class="rightalign"><a class="blink" href="/pin?export=drive">
+            <img border=1 width="32" height="32" title="Export Pins to Google Drive" src="/static/images/drive.png"></a>
+        </span>
+    {% endif %}
+{% endblock %}
+
 {% block display %}
 
 {% for item in items %}
