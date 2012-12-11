@@ -15,9 +15,10 @@ from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.api import images
 
+from webpicasa import WebPicasa
 from datamodels import Board, Pin
-from googledrive import *
 from mediainmemoryupload import MediaInMemoryUpload
+from googledrive import getCodeCredentials, redirectAuth, createService
 
 jinja_environment = jinja2.Environment(
                         loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + '/templates'))
@@ -195,6 +196,42 @@ class PinHandler(Util):
         }
         
         export = self.request.get('export')
+        if export == 'picasa':
+    
+            hosturl = self.request.host_url
+            if hosturl == 'http://localhost:8080':
+                # hard-code your email address...
+                username = 'gmesalazar@gmail.com'
+            else:
+                username = users.get_current_user().email()
+                
+            webpicasa = WebPicasa('http://picasaweb.google.com/data/', username)
+            
+            token = webpicasa.getSessionToken(self)
+            if not token:
+                self.redirect(webpicasa.getAuthSubUrl(self).to_string())
+            else:
+                albums = webpicasa.GetUserFeed()
+                
+                flag = False
+                album = None
+                
+                for a in albums.entry:
+                    if a.title.text == 'CSCE242 PinBoard':
+                        flag = True
+                        album = a
+                if not flag:
+                    album = webpicasa.InsertAlbum(title='CSCE242 PinBoard', summary='')
+                
+                album_url = 'http://picasaweb.google.com/data/feed/api/user/%s/albumid/%s' % (webpicasa.email, album.gphoto_id.text)
+                
+                #TODO: check returned value
+                webpicasa.insertImage(album_url, pin.caption, str(pin.image), self.formatToString(pin.format))
+                
+                self.template_values['message'] = True
+                self.template_values['message_header'] = ''
+                self.template_values['message_body'] = '''Your pins were successfully exported 
+                                                    to your Web Picasa account!'''
         if export == 'drive':
             
             # if we entered this zone, it's because we want to export only one pin, so
@@ -283,7 +320,47 @@ class PinsHandler(Util):
         }
         
         export = self.request.get('export')
-        if export == 'drive':
+        
+        if export == 'picasa':
+            
+            hosturl = self.request.host_url
+            if hosturl == 'http://localhost:8080':
+                # hard-code your email address...
+                username = 'gmesalazar@gmail.com'
+            else:
+                username = users.get_current_user().email()
+            
+            webpicasa = WebPicasa('http://picasaweb.google.com/data/', username)
+            
+            token = webpicasa.getSessionToken(self)
+            if not token:
+                self.redirect(webpicasa.getAuthSubUrl(self).to_string())
+            else:
+                albums = webpicasa.GetUserFeed()
+                
+                flag = False
+                album = None
+                
+                for a in albums.entry:
+                    if a.title.text == 'CSCE242 PinBoard':
+                        flag = True
+                        album = a
+                if not flag:
+                    album = webpicasa.InsertAlbum(title='CSCE242 PinBoard', summary='')
+            
+                for pin in pins:
+                
+                    album_url = 'http://picasaweb.google.com/data/feed/api/user/%s/albumid/%s' % (webpicasa.email, album.gphoto_id.text)
+                    
+                    #TODO: check returned value
+                    webpicasa.insertImage(album_url, pin.caption, str(pin.image), self.formatToString(pin.format))
+                    
+                    self.template_values['message'] = True
+                    self.template_values['message_header'] = ''
+                    self.template_values['message_body'] = '''Your pins were successfully exported 
+                                                        to your Web Picasa account!'''
+                
+        elif export == 'drive':
 
             creds = getCodeCredentials(self)
             if not creds:

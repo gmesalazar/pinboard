@@ -2,8 +2,12 @@
 
 {% block drivelink %}
     {% if (items)|length > 0 %}
+        <span class="rightalign"><a class="blink" href="/pin?export=picasa">
+            <img width="32" height="32" title="Export my Pins to Picasa Web" src="/static/images/picasa.png"></a>
+        </span>
+    
         <span class="rightalign"><a class="blink" href="/pin?export=drive">
-            <img border=1 width="32" height="32" title="Export Pins to Google Drive" src="/static/images/drive.png"></a>
+            <img width="32" height="32" title="Export my Pins to Google Drive" src="/static/images/drive.png"></a>
         </span>
     {% endif %}
 {% endblock %}
